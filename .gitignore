@@ -1,0 +1,5 @@
+node_modules/
+uploads/
+server/pbl.db
+.env
+*.log

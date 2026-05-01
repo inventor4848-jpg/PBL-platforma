@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kirish — PBL Platforma</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-box fade-in">
+    <div class="login-logo">
+      <h1>PBL <span>Platforma</span></h1>
+      <p>Muammoli ta'lim tizimiga xush kelibsiz</p>
+    </div>
+
+    <div id="error-msg" class="alert alert-danger hidden"></div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label>Login</label>
+        <input type="text" id="username" class="form-control" placeholder="Loginni kiriting" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Parol</label>
+        <input type="password" id="password" class="form-control" placeholder="Parolni kiriting" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; padding:0.85rem; font-size:1rem; margin-top:0.5rem;" id="login-btn">
+        Kirish
+      </button>
+    </form>
+
+    <div style="text-align:center; margin-top:1.5rem;">
+      <a href="/" style="color:var(--gray); font-size:0.85rem; text-decoration:none;">← Bosh sahifaga qaytish</a>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+  // Redirect if already logged in
+  const user = getUser();
+  if (user && getToken()) {
+    window.location.href = `/${user.role}.html`;
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    const errEl = document.getElementById('error-msg');
+    errEl.classList.add('hidden');
+    btn.disabled = true;
+    btn.textContent = 'Yuklanmoqda...';
+
+    try {
+      const data = await apiFetch('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: document.getElementById('username').value.trim(),
+          password: document.getElementById('password').value
+        })
+      });
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify({ id: data.id, role: data.role, full_name: data.full_name }));
+      window.location.href = `/${data.role}.html`;
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'Kirish';
+    }
+  });
+</script>
+</body>
+</html>

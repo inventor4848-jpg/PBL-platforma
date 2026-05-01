@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PBL Platforma — Muammoli Ta'lim Tizimi</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .roles-section { background: white; }
+    .roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; }
+    .role-card {
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .role-card:hover { transform: translateY(-5px); }
+    .role-card.admin { background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; }
+    .role-card.teacher { background: linear-gradient(135deg, #5b4fcf, #3d35a8); color: white; }
+    .role-card.student { background: linear-gradient(135deg, #f5a623, #e0921a); color: white; }
+    .role-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .role-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.8rem; }
+    .role-card p { opacity: 0.85; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .how-it-works { background: var(--light); }
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; }
+    .step { text-align: center; padding: 1.5rem; }
+    .step-num { width: 48px; height: 48px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; margin: 0 auto 1rem; }
+    .step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step p { color: var(--gray); font-size: 0.85rem; }
+    .cta-section { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: white; text-align: center; padding: 80px 5%; }
+    .cta-section h2 { font-size: 2.2rem; font-weight: 900; margin-bottom: 1rem; }
+    .cta-section p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">PBL <span>Platforma</span></a>
+  <ul class="navbar-links">
+    <li><a href="#about">Haqida</a></li>
+    <li><a href="#roles">Rollar</a></li>
+    <li><a href="#how">Qanday ishlaydi</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+  <a href="/login.html" class="btn btn-primary">Kirish</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Muammoli Ta'lim Platformasi</h1>
+    <p>PBL texnologiyasi asosida qurilgan zamonaviy ta'lim tizimi. O'qituvchi, talaba va administrator uchun birlashgan platforma.</p>
+    <div class="hero-btns">
+      <a href="/login.html" class="btn btn-accent">Tizimga kirish</a>
+      <a href="#about" class="btn btn-outline-white">Batafsil</a>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT 1 -->
+<div class="split-section" id="about">
+  <div class="split-img" style="background: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800') center/cover"></div>
+  <div class="split-content accent">
+    <h2>PBL NIMA VA U QANDAY ISHLAYDI?</h2>
+    <p>Problem-Based Learning — muammoli ta'lim metodi bo'lib, talabalar real hayotiy muammolarni guruhda hal qilish orqali o'rganishadi. Bu metod tanqidiy fikrlash, jamoaviy ishlash va mustaqil izlanish ko'nikmalarini rivojlantiradi.</p>
+    <a href="/login.html" class="btn btn-outline-white">Boshlash</a>
+  </div>
+</div>
+
+<!-- SPLIT 2 -->
+<div class="split-section">
+  <div class="split-content" style="background: #f5f5f5;">
+    <h2>RAQAMLARDA SAMARALI TA'LIM</h2>
+    <p>Platformamiz orqali o'qituvchilar loyihalarni onlinе boshqaradi, talabalar vazifalarni topshiradi va natijalar real vaqtda kuzatiladi.</p>
+    <a href="#roles" class="btn btn-outline">Rollarni ko'rish</a>
+  </div>
+  <div class="split-img" style="background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800') center/cover"></div>
+</div>
+
+<!-- STATS -->
+<div class="stats-banner">
+  <div class="stats-grid">
+    <div class="stat-item"><h3>3</h3><p>Foydalanuvchi roli</p></div>
+    <div class="stat-item"><h3>∞</h3><p>Loyihalar</p></div>
+    <div class="stat-item"><h3>100%</h3><p>Dinamik tizim</p></div>
+    <div class="stat-item"><h3>24/7</h3><p>Onlayn kirish</p></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="section-title">Platforma <span>imkoniyatlari</span></div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="icon">📊</div>
+      <h3>Real vaqt tahlili</h3>
+      <p>Dashboard orqali barcha loyihalar, talabalar va natijalarni real vaqtda kuzating.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🎯</div>
+      <h3>Vazifa taqsimlash</h3>
+      <p>Loyihani bolaklarga bo'lib, guruh a'zolariga avtomatik taqsimlab bering.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💬</div>
+      <h3>Real vaqt chat</h3>
+      <p>Loyiha ishtirokchilari orasida jonli muloqot va fikr almashish imkoni.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🏆</div>
+      <h3>Mukofot tizimi</h3>
+      <p>Eng faol va ijodkor talabalarni aniqlovchi reyting va mukofot tizimi.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📁</div>
+      <h3>Fayl yuklash</h3>
+      <p>Talabalar ish natijalarini tizimga yuklaydi, o'qituvchi esa onlayn baholaydi.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔐</div>
+      <h3>Rol asosida kirish</h3>
+      <p>Admin, o'qituvchi va talaba uchun alohida panel va huquqlar tizimi.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="section roles-section" id="roles">
+  <div class="section-title">Kim uchun <span>mo'ljallangan</span></div>
+  <div class="roles-grid">
+    <div class="role-card admin">
+      <div class="role-icon">👨‍💼</div>
+      <h3>Administrator</h3>
+      <p>Fakultet, kafedra va guruhlarni boshqaradi. O'qituvchi va talabalarni tizimga kiritadi va loyihalarga biriktiradi.</p>
+      <a href="/login.html" class="btn btn-outline-white">Kirish</a>
+    </div>
+    <div class="role-card teacher">
+      <div class="role-icon">👨‍🏫</div>
+      <h3>O'qituvchi</h3>
+      <p>PBL loyihalarini yaratadi, talablarga vazifalar beradi, jarayonni kuzatadi va natijalarni baholaydi.</p>
+      <a href="/login.html" class="btn btn-outline-white">Kirish</a>
+    </div>
+    <div class="role-card student">
+      <div class="role-icon">👨‍🎓</div>
+      <h3>Talaba</h3>
+      <p>Berilgan vazifalarni bajaradi, natijalarini yuklaydi, guruh a'zolari bilan muloqot qiladi.</p>
+      <a href="/login.html" class="btn btn-outline-white">Kirish</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how-it-works" id="how">
+  <div class="section-title">Qanday <span>ishlaydi</span></div>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>Tuzilma yaratish</h4>
+      <p>Admin fakultet, kafedra va guruhlarni tizimga kiritadi.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>Foydalanuvchi qo'shish</h4>
+      <p>Admin o'qituvchi va talabalarni ro'yxatga oladi, login-parol beradi.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Loyiha yaratish</h4>
+      <p>Admin loyihani o'qituvchiga biriktiradi. O'qituvchi loyiha ichida vazifalar yaratadi.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h4>Talaba ishlaydi</h4>
+      <p>Talaba vazifani ko'rib, ishini bajaradi va tizimga yuklaydi.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <h4>Baholash</h4>
+      <p>O'qituvchi natijani ko'rib, ball va fikr bildiradi.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <h4>Tahlil</h4>
+      <p>Dashboard orqali barcha natijalar, reyting va statistika ko'rinadi.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Sizning ta'limingiz uchun yangi imkoniyatlar</h2>
+  <p>Bugun PBL platformasiga kirip, zamonaviy ta'lim jarayonini boshlang.</p>
+  <a href="/login.html" class="btn btn-outline-white" style="font-size:1rem; padding: 0.9rem 2.5rem;">Tizimga kirish →</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="footer-grid">
+    <div>
+      <h4>PBL Platforma</h4>
+      <div class="footer-divider"></div>
+      <p>Muammoli ta'lim metodologiyasi asosida qurilgan zamonaviy elektron ta'lim platformasi.</p>
+      <div class="social-links">
+        <a href="#" class="social-link">f</a>
+        <a href="#" class="social-link">X</a>
+        <a href="#" class="social-link">in</a>
+      </div>
+    </div>
+    <div>
+      <h4>Havolalar</h4>
+      <div class="footer-divider"></div>
+      <a href="/">Bosh sahifa</a>
+      <a href="#about">Haqida</a>
+      <a href="#roles">Rollar</a>
+      <a href="/login.html">Kirish</a>
+    </div>
+    <div>
+      <h4>Kontaktlar</h4>
+      <div class="footer-divider"></div>
+      <p>info@pbl-platform.uz</p>
+      <p>+998 71 000 00 00</p>
+    </div>
+    <div>
+      <h4>Obuna bo'lish</h4>
+      <div class="footer-divider"></div>
+      <p>Yangiliklar va xabarlardan xabardor bo'ling.</p>
+      <div style="display:flex; gap:0.5rem; margin-top:0.8rem;">
+        <input type="email" placeholder="Email" class="form-control" style="background:#2d2d4e; border-color:#3d3d6e; color:white; font-size:0.85rem;">
+        <button class="btn btn-primary btn-sm">→</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 PBL Platforma. Barcha huquqlar himoyalangan.</p>
+  </div>
+</footer>
+
+</body>
+</html>
