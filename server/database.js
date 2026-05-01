@@ -1,12 +1,6 @@
-const { Pool } = require('pg');
+const { neon } = require('@neondatabase/serverless');
 const bcrypt = require('bcryptjs');
 
-// Parse bigint (COUNT returns) as JS number
-const pg = require('pg');
-pg.types.setTypeParser(20, parseInt);
-pg.types.setTypeParser(1700, parseFloat);
-
-// Vercel Neon integration uses POSTGRES_URL, manual setup uses DATABASE_URL
 const connectionString =
   process.env.DATABASE_URL ||
   process.env.POSTGRES_URL ||
@@ -14,66 +8,69 @@ const connectionString =
   process.env.NEON_DATABASE_URL;
 
 if (!connectionString) {
-  console.error('XATO: DATABASE_URL topilmadi! Vercel Environment Variables ga qoshing.');
+  console.error('XATO: DATABASE_URL topilmadi!');
 }
 
-const pool = new Pool({
-  connectionString,
-  ssl: { rejectUnauthorized: false },
-  connectionTimeoutMillis: 10000,
-  max: 5
-});
+const sql = neon(connectionString || 'postgresql://localhost/pbl');
 
-function toPostgres(sql) {
+function toPostgres(query) {
   let i = 0;
-  return sql.replace(/\?/g, () => '$' + (++i));
-}
-
-function norm(v) {
-  return v === undefined ? null : v;
+  return query.replace(/\?/g, () => '$' + (++i));
 }
 
 function flatArgs(args) {
-  if (!args || args.length === 0) return [];
-  if (args.length === 1 && Array.isArray(args[0])) return args[0].map(norm);
-  return args.map(norm);
+  if (!args || !args.length) return [];
+  if (args.length === 1 && Array.isArray(args[0])) return args[0].map(n);
+  return args.map(n);
+}
+
+function n(v) {
+  return v === undefined ? null : v;
 }
 
 const db = {
-  async get(sql, ...args) {
-    const params = flatArgs(args);
-    const { rows } = await pool.query(toPostgres(sql), params);
-    return rows[0] || null;
-  },
-  async all(sql, ...args) {
-    const params = flatArgs(args);
-    const { rows } = await pool.query(toPostgres(sql), params);
-    return rows;
-  },
-  async run(sql, ...args) {
-    const params = flatArgs(args);
-    const isInsert = sql.trim().toUpperCase().startsWith('INSERT');
-    const pgSql = toPostgres(sql) + (isInsert ? ' RETURNING id' : '');
-    const { rows, rowCount } = await pool.query(pgSql, params);
-    return { lastInsertRowid: rows[0]?.id || 0, changes: rowCount };
-  },
-  async transaction(fn) {
-    const client = await pool.connect();
+  async get(query, ...args) {
     try {
-      await client.query('BEGIN');
-      await fn(client);
-      await client.query('COMMIT');
+      const rows = await sql.unsafe(toPostgres(query), flatArgs(args));
+      return rows[0] || null;
     } catch (e) {
-      await client.query('ROLLBACK');
+      console.error('db.get error:', e.message, '| SQL:', query);
       throw e;
-    } finally {
-      client.release();
     }
   },
-  pool
+
+  async all(query, ...args) {
+    try {
+      return await sql.unsafe(toPostgres(query), flatArgs(args));
+    } catch (e) {
+      console.error('db.all error:', e.message, '| SQL:', query);
+      throw e;
+    }
+  },
+
+  async run(query, ...args) {
+    try {
+      const isInsert = query.trim().toUpperCase().startsWith('INSERT');
+      const pgQuery = toPostgres(query) + (isInsert ? ' RETURNING id' : '');
+      const rows = await sql.unsafe(pgQuery, flatArgs(args));
+      return { lastInsertRowid: rows[0]?.id || 0 };
+    } catch (e) {
+      console.error('db.run error:', e.message, '| SQL:', query);
+      throw e;
+    }
+  },
+
+  async transaction(fn) {
+    await sql.transaction(async (tx) => {
+      const client = {
+        query: (q, params) => tx.unsafe(q, params || [])
+      };
+      await fn(client);
+    });
+  }
 };
 
-const SCHEMA_STATEMENTS = [
+const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS faculties (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -140,17 +137,13 @@ let _initialized = false;
 
 async function ensureInit() {
   if (_initialized) return;
-
   try {
-    // Connection test
-    await pool.query('SELECT 1');
+    await sql.unsafe('SELECT 1');
 
-    // Create tables
-    for (const stmt of SCHEMA_STATEMENTS) {
-      try { await pool.query(stmt); } catch {}
+    for (const stmt of SCHEMA) {
+      try { await sql.unsafe(stmt); } catch {}
     }
 
-    // Create default admin if not exists
     const admin = await db.get('SELECT id FROM users WHERE username = ?', '123123*');
     if (!admin) {
       const hash = bcrypt.hashSync('123123*', 10);
@@ -158,17 +151,15 @@ async function ensureInit() {
         'INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)',
         '123123*', hash, 'Administrator', 'admin'
       );
-      console.log('Admin yaratildi: 123123* / 123123*');
+      console.log('Admin yaratildi.');
     }
 
     _initialized = true;
     console.log('DB tayyor.');
   } catch (e) {
-    // Reset flag so next request retries
     _initialized = false;
-    const msg = `DB ulanmadi: ${e.message}. DATABASE_URL=${connectionString ? 'mavjud' : 'YOQ'}`;
-    console.error(msg);
-    throw new Error(msg);
+    console.error('DB xato:', e.message);
+    throw new Error('Baza ulanmadi: ' + e.message);
   }
 }
 
