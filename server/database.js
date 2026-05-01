@@ -6,9 +6,22 @@ const pg = require('pg');
 pg.types.setTypeParser(20, parseInt);
 pg.types.setTypeParser(1700, parseFloat);
 
+// Vercel Neon integration uses POSTGRES_URL, manual setup uses DATABASE_URL
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.POSTGRES_PRISMA_URL ||
+  process.env.NEON_DATABASE_URL;
+
+if (!connectionString) {
+  console.error('XATO: DATABASE_URL topilmadi! Vercel Environment Variables ga qoshing.');
+}
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  connectionString,
+  ssl: { rejectUnauthorized: false },
+  connectionTimeoutMillis: 10000,
+  max: 5
 });
 
 function toPostgres(sql) {
@@ -127,18 +140,35 @@ let _initialized = false;
 
 async function ensureInit() {
   if (_initialized) return;
-  _initialized = true;
-  for (const stmt of SCHEMA_STATEMENTS) {
-    await pool.query(stmt).catch(e => console.error('Schema err:', e.message));
-  }
-  const admin = await db.get('SELECT id FROM users WHERE username = ?', '123123*');
-  if (!admin) {
-    const hash = bcrypt.hashSync('123123*', 10);
-    await db.run(
-      'INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)',
-      '123123*', hash, 'Administrator', 'admin'
-    );
-    console.log('Admin yaratildi.');
+
+  try {
+    // Connection test
+    await pool.query('SELECT 1');
+
+    // Create tables
+    for (const stmt of SCHEMA_STATEMENTS) {
+      try { await pool.query(stmt); } catch {}
+    }
+
+    // Create default admin if not exists
+    const admin = await db.get('SELECT id FROM users WHERE username = ?', '123123*');
+    if (!admin) {
+      const hash = bcrypt.hashSync('123123*', 10);
+      await db.run(
+        'INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)',
+        '123123*', hash, 'Administrator', 'admin'
+      );
+      console.log('Admin yaratildi: 123123* / 123123*');
+    }
+
+    _initialized = true;
+    console.log('DB tayyor.');
+  } catch (e) {
+    // Reset flag so next request retries
+    _initialized = false;
+    const msg = `DB ulanmadi: ${e.message}. DATABASE_URL=${connectionString ? 'mavjud' : 'YOQ'}`;
+    console.error(msg);
+    throw new Error(msg);
   }
 }
 

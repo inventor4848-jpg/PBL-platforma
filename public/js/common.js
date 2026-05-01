@@ -7,9 +7,17 @@ async function apiFetch(url, opts = {}) {
   const token = getToken();
   const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...opts.headers };
   const res = await fetch(API + url, { ...opts, headers });
-  if (res.status === 401) { logout(); return; }
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Xatolik yuz berdi');
+  if (res.status === 401) {
+    logout();
+    throw new Error('Sessiya tugadi, qayta kiring');
+  }
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(`Server xatosi (${res.status})`);
+  }
+  if (!res.ok) throw new Error(data?.error || `Server xatosi (${res.status})`);
   return data;
 }
 
