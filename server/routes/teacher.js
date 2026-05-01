@@ -4,123 +4,149 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../../uploads');
+if (!process.env.VERCEL && !fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-const storage = multer.diskStorage({
-  destination: uploadDir,
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage });
+const upload = multer({ dest: uploadDir });
 
-module.exports = function(db) {
+module.exports = function (db) {
   const router = express.Router();
   router.use(authMiddleware, requireRole('teacher'));
 
-  router.get('/dashboard', (req, res) => {
-    const tid = req.user.id;
-    const projects = db.prepare('SELECT COUNT(*) as count FROM projects WHERE teacher_id=?').get(tid).count;
-    const tasks_total = db.prepare('SELECT COUNT(*) as count FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE p.teacher_id=?').get(tid).count;
-    const tasks_submitted = db.prepare('SELECT COUNT(*) as count FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE p.teacher_id=? AND pt.status=?').get(tid, 'submitted').count;
-    const tasks_graded = db.prepare('SELECT COUNT(*) as count FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE p.teacher_id=? AND pt.status=?').get(tid, 'graded').count;
-    res.json({ projects, tasks_total, tasks_submitted, tasks_graded });
-  });
-
-  router.get('/projects', (req, res) => {
-    res.json(db.prepare(`
-      SELECT p.*, g.name as group_name,
-        (SELECT COUNT(*) FROM project_tasks WHERE project_id=p.id) as task_count,
-        (SELECT COUNT(*) FROM project_tasks WHERE project_id=p.id AND status='graded') as graded_count
-      FROM projects p LEFT JOIN groups g ON p.group_id=g.id
-      WHERE p.teacher_id=? ORDER BY p.created_at DESC
-    `).all(req.user.id));
-  });
-
-  router.get('/projects/:id', (req, res) => {
-    const project = db.prepare('SELECT p.*, g.name as group_name FROM projects p LEFT JOIN groups g ON p.group_id=g.id WHERE p.id=? AND p.teacher_id=?').get(req.params.id, req.user.id);
-    if (!project) return res.status(404).json({ error: 'Topilmadi' });
-
-    const tasks = db.prepare(`
-      SELECT pt.*, u.full_name as student_name
-      FROM project_tasks pt JOIN users u ON pt.student_id=u.id
-      WHERE pt.project_id=? ORDER BY u.full_name
-    `).all(req.params.id);
-
-    const leaderboard = db.prepare(`
-      SELECT u.full_name, u.id,
-        COUNT(CASE WHEN pt.status='graded' THEN 1 ELSE NULL END) as graded_tasks,
-        AVG(CASE WHEN pt.grade IS NOT NULL THEN pt.grade ELSE NULL END) as avg_grade,
-        COUNT(pt.id) as total_tasks
-      FROM users u JOIN project_tasks pt ON pt.student_id=u.id
-      WHERE pt.project_id=?
-      GROUP BY u.id
-      ORDER BY avg_grade DESC, graded_tasks DESC
-    `).all(req.params.id);
-
-    res.json({ project, tasks, leaderboard });
-  });
-
-  router.post('/projects/:id/tasks', (req, res) => {
-    const { student_id, title, description } = req.body;
-    const project = db.prepare('SELECT id FROM projects WHERE id=? AND teacher_id=?').get(req.params.id, req.user.id);
-    if (!project) return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    if (!student_id || !title) return res.status(400).json({ error: 'Talaba va sarlavha kerak' });
-    const r = db.prepare('INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?)').run(req.params.id, student_id, title, description || null);
-    res.json({ id: r.lastInsertRowid });
-  });
-
-  router.post('/projects/:id/assign-group', (req, res) => {
-    const { tasks } = req.body;
-    const project = db.prepare('SELECT * FROM projects WHERE id=? AND teacher_id=?').get(req.params.id, req.user.id);
-    if (!project) return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    if (!project.group_id) return res.status(400).json({ error: 'Loyihaga guruh biriktirilmagan' });
-
-    const students = db.prepare('SELECT id FROM users WHERE group_id=? AND role=?').all(project.group_id, 'student');
-    if (students.length === 0) return res.status(400).json({ error: 'Guruhda talabalar yo\'q' });
-
-    const insert = db.prepare('INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?)');
-    db._db.run('BEGIN');
+  router.get('/dashboard', async (req, res) => {
     try {
-      for (let i = 0; i < students.length; i++) {
-        const task = tasks[i % tasks.length];
-        insert.run(req.params.id, students[i].id, task.title, task.description || null);
-      }
-      db._db.run('COMMIT');
-      db._scheduleSave();
-    } catch(e) {
-      db._db.run('ROLLBACK');
-      throw e;
-    }
-    res.json({ success: true, assigned: students.length });
+      const tid = req.user.id;
+      const [proj, total, submitted, graded] = await Promise.all([
+        db.get('SELECT COUNT(*)::int as count FROM projects WHERE teacher_id=?', tid),
+        db.get('SELECT COUNT(*)::int as count FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE p.teacher_id=?', tid),
+        db.get("SELECT COUNT(*)::int as count FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE p.teacher_id=? AND pt.status='submitted'", tid),
+        db.get("SELECT COUNT(*)::int as count FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE p.teacher_id=? AND pt.status='graded'", tid),
+      ]);
+      res.json({ projects: proj.count, tasks_total: total.count, tasks_submitted: submitted.count, tasks_graded: graded.count });
+    } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.put('/tasks/:taskId/grade', (req, res) => {
-    const { grade, feedback } = req.body;
-    const task = db.prepare(`
-      SELECT pt.* FROM project_tasks pt JOIN projects p ON pt.project_id=p.id
-      WHERE pt.id=? AND p.teacher_id=?
-    `).get(req.params.taskId, req.user.id);
-    if (!task) return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    db.prepare('UPDATE project_tasks SET grade=?, feedback=?, status=?, graded_at=datetime(\'now\') WHERE id=?').run(grade, feedback || null, 'graded', req.params.taskId);
-    res.json({ success: true });
+  router.get('/projects', async (req, res) => {
+    try {
+      res.json(await db.all(`
+        SELECT p.*, g.name as group_name,
+          (SELECT COUNT(*)::int FROM project_tasks WHERE project_id=p.id) as task_count,
+          (SELECT COUNT(*)::int FROM project_tasks WHERE project_id=p.id AND status='graded') as graded_count
+        FROM projects p LEFT JOIN groups g ON p.group_id=g.id
+        WHERE p.teacher_id=? ORDER BY p.created_at DESC
+      `, req.user.id));
+    } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.get('/groups/:groupId/students', (req, res) => {
-    res.json(db.prepare('SELECT id, full_name FROM users WHERE group_id=? AND role=?').all(req.params.groupId, 'student'));
+  router.get('/projects/:id', async (req, res) => {
+    try {
+      const project = await db.get(
+        'SELECT p.*, g.name as group_name FROM projects p LEFT JOIN groups g ON p.group_id=g.id WHERE p.id=? AND p.teacher_id=?',
+        req.params.id, req.user.id
+      );
+      if (!project) return res.status(404).json({ error: 'Topilmadi' });
+
+      const [tasks, leaderboard] = await Promise.all([
+        db.all(`SELECT pt.*, u.full_name as student_name FROM project_tasks pt JOIN users u ON pt.student_id=u.id WHERE pt.project_id=? ORDER BY u.full_name`, req.params.id),
+        db.all(`
+          SELECT u.full_name, u.id,
+            COUNT(CASE WHEN pt.status='graded' THEN 1 END)::int as graded_tasks,
+            ROUND(AVG(pt.grade)::numeric, 1) as avg_grade,
+            COUNT(pt.id)::int as total_tasks
+          FROM users u JOIN project_tasks pt ON pt.student_id=u.id
+          WHERE pt.project_id=? GROUP BY u.id, u.full_name
+          ORDER BY avg_grade DESC NULLS LAST, graded_tasks DESC
+        `, req.params.id)
+      ]);
+      res.json({ project, tasks, leaderboard });
+    } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.get('/chat/:projectId', (req, res) => {
-    const project = db.prepare('SELECT id FROM projects WHERE id=? AND teacher_id=?').get(req.params.projectId, req.user.id);
-    if (!project) return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    res.json(db.prepare(`
-      SELECT cm.*, u.full_name, u.role FROM chat_messages cm
-      JOIN users u ON cm.user_id=u.id
-      WHERE cm.project_id=? ORDER BY cm.created_at ASC
-    `).all(req.params.projectId));
+  router.post('/projects/:id/tasks', async (req, res) => {
+    try {
+      const { student_id, title, description } = req.body;
+      const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', req.params.id, req.user.id);
+      if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
+      if (!student_id || !title) return res.status(400).json({ error: 'Talaba va sarlavha kerak' });
+      const r = await db.run('INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?)',
+        req.params.id, student_id, title, description || null);
+      res.json({ id: r.lastInsertRowid });
+    } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.get('/my-chats', (req, res) => {
-    res.json(db.prepare('SELECT id, title FROM projects WHERE teacher_id=?').all(req.user.id));
+  router.post('/projects/:id/assign-group', async (req, res) => {
+    try {
+      const { tasks } = req.body;
+      const project = await db.get('SELECT * FROM projects WHERE id=? AND teacher_id=?', req.params.id, req.user.id);
+      if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
+      if (!project.group_id) return res.status(400).json({ error: 'Loyihaga guruh biriktirilmagan' });
+
+      const students = await db.all("SELECT id FROM users WHERE group_id=? AND role='student'", project.group_id);
+      if (!students.length) return res.status(400).json({ error: "Guruhda talabalar yo'q" });
+
+      await db.transaction(async (client) => {
+        for (let i = 0; i < students.length; i++) {
+          const task = tasks[i % tasks.length];
+          await client.query(
+            'INSERT INTO project_tasks (project_id, student_id, title, description) VALUES ($1,$2,$3,$4)',
+            [req.params.id, students[i].id, task.title, task.description || null]
+          );
+        }
+      });
+      res.json({ success: true, assigned: students.length });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.put('/tasks/:taskId/grade', async (req, res) => {
+    try {
+      const { grade, feedback } = req.body;
+      const task = await db.get(`
+        SELECT pt.* FROM project_tasks pt JOIN projects p ON pt.project_id=p.id
+        WHERE pt.id=? AND p.teacher_id=?
+      `, req.params.taskId, req.user.id);
+      if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
+      await db.run('UPDATE project_tasks SET grade=?, feedback=?, status=?, graded_at=NOW() WHERE id=?',
+        grade, feedback || null, 'graded', req.params.taskId);
+      res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.get('/groups/:groupId/students', async (req, res) => {
+    try {
+      res.json(await db.all("SELECT id, full_name FROM users WHERE group_id=? AND role='student'", req.params.groupId));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.get('/chat/:projectId', async (req, res) => {
+    try {
+      const { last_id } = req.query;
+      const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', req.params.projectId, req.user.id);
+      if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
+      const sql = last_id
+        ? 'SELECT cm.*, u.full_name, u.role FROM chat_messages cm JOIN users u ON cm.user_id=u.id WHERE cm.project_id=? AND cm.id>? ORDER BY cm.created_at ASC'
+        : 'SELECT cm.*, u.full_name, u.role FROM chat_messages cm JOIN users u ON cm.user_id=u.id WHERE cm.project_id=? ORDER BY cm.created_at ASC';
+      const msgs = last_id ? await db.all(sql, req.params.projectId, last_id) : await db.all(sql, req.params.projectId);
+      res.json(msgs);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.post('/chat/:projectId', async (req, res) => {
+    try {
+      const { message } = req.body;
+      if (!message?.trim()) return res.status(400).json({ error: 'Xabar kerak' });
+      const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', req.params.projectId, req.user.id);
+      if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
+      const r = await db.run('INSERT INTO chat_messages (project_id, user_id, message) VALUES (?,?,?)',
+        req.params.projectId, req.user.id, message.trim());
+      const saved = await db.get('SELECT cm.*, u.full_name, u.role FROM chat_messages cm JOIN users u ON cm.user_id=u.id WHERE cm.id=?', r.lastInsertRowid);
+      res.json(saved);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.get('/my-chats', async (req, res) => {
+    try {
+      res.json(await db.all('SELECT id, title FROM projects WHERE teacher_id=?', req.user.id));
+    } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
   return router;

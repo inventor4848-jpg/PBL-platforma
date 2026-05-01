@@ -6,7 +6,6 @@
   <title>O'qituvchi Panel — PBL Platforma</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
   <style>
     .project-card {
       background: white;
@@ -196,16 +195,7 @@ const user = requireAuth('teacher');
 document.getElementById('sidebar-username').textContent = user?.full_name || '';
 document.getElementById('topbar-user').textContent = user?.full_name || '';
 
-let socket, currentChatProject = null, myProjects = [];
-
-// SOCKET INIT
-function initSocket() {
-  socket = io({ auth: { token: getToken() } });
-  socket.on('new-message', (msg) => {
-    if (msg.project_id == currentChatProject) appendMessage(msg);
-  });
-}
-initSocket();
+let currentChatProject = null, myProjects = [], chatLastId = 0, chatPollTimer = null;
 
 // PAGE NAV
 document.querySelectorAll('.sidebar-nav a').forEach(a => {
@@ -468,7 +458,7 @@ async function submitGrade() {
   } catch(e) { toast(e.message, 'error'); }
 }
 
-// CHAT
+// CHAT (polling)
 async function loadChat() {
   const projs = await apiFetch('/api/teacher/my-chats');
   const list = document.getElementById('chat-project-list');
@@ -481,18 +471,27 @@ async function loadChat() {
 }
 
 async function joinChat(projectId, title, el) {
+  if (chatPollTimer) clearInterval(chatPollTimer);
   currentChatProject = projectId;
+  chatLastId = 0;
   document.getElementById('chat-title').textContent = title;
   document.querySelectorAll('#chat-project-list > div').forEach(d => d.style.background = '');
   if (el) el.style.background = 'var(--primary-light)';
   document.getElementById('chat-input-area').style.display = 'flex';
-  socket.emit('join-project', projectId);
 
   const msgs = await apiFetch(`/api/teacher/chat/${projectId}`);
   const container = document.getElementById('chat-messages');
   container.innerHTML = '';
-  msgs.forEach(m => appendMessage(m));
+  msgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
   container.scrollTop = container.scrollHeight;
+
+  chatPollTimer = setInterval(async () => {
+    if (!currentChatProject) return;
+    try {
+      const newMsgs = await apiFetch(`/api/teacher/chat/${currentChatProject}?last_id=${chatLastId}`);
+      newMsgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
+    } catch {}
+  }, 3000);
 }
 
 function appendMessage(msg) {
@@ -511,12 +510,15 @@ function appendMessage(msg) {
 document.getElementById('chat-send').addEventListener('click', sendMsg);
 document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
 
-function sendMsg() {
+async function sendMsg() {
   const input = document.getElementById('chat-input');
   const msg = input.value.trim();
   if (!msg || !currentChatProject) return;
-  socket.emit('send-message', { projectId: currentChatProject, message: msg });
   input.value = '';
+  try {
+    const saved = await apiFetch(`/api/teacher/chat/${currentChatProject}`, { method: 'POST', body: JSON.stringify({ message: msg }) });
+    if (saved.id > chatLastId) { chatLastId = saved.id; appendMessage(saved); }
+  } catch (e) { toast(e.message, 'error'); }
 }
 
 initNav();

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Talaba Panel — PBL Platforma</title>
   <link rel="stylesheet" href="/css/style.css">
-  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
   <style>
     .task-card {
       background: white;
@@ -132,15 +131,7 @@ const user = requireAuth('student');
 document.getElementById('sidebar-username').textContent = user?.full_name || '';
 document.getElementById('topbar-user').textContent = user?.full_name || '';
 
-let socket, currentChatProject = null, allTasks = [];
-
-function initSocket() {
-  socket = io({ auth: { token: getToken() } });
-  socket.on('new-message', (msg) => {
-    if (msg.project_id == currentChatProject) appendMessage(msg);
-  });
-}
-initSocket();
+let currentChatProject = null, allTasks = [], chatLastId = 0, chatPollTimer = null;
 
 document.querySelectorAll('.sidebar-nav a').forEach(a => {
   a.addEventListener('click', e => {
@@ -292,18 +283,27 @@ async function loadChat() {
 }
 
 async function joinChat(projectId, title, el) {
+  if (chatPollTimer) clearInterval(chatPollTimer);
   currentChatProject = projectId;
+  chatLastId = 0;
   document.getElementById('chat-title').textContent = title;
   document.querySelectorAll('#chat-project-list > div').forEach(d => d.style.background = '');
   if (el) el.style.background = 'var(--primary-light)';
   document.getElementById('chat-input-area').style.display = 'flex';
-  socket.emit('join-project', projectId);
 
   const msgs = await apiFetch(`/api/student/chat/${projectId}`);
   const container = document.getElementById('chat-messages');
   container.innerHTML = '';
-  msgs.forEach(m => appendMessage(m));
+  msgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
   container.scrollTop = container.scrollHeight;
+
+  chatPollTimer = setInterval(async () => {
+    if (!currentChatProject) return;
+    try {
+      const newMsgs = await apiFetch(`/api/student/chat/${currentChatProject}?last_id=${chatLastId}`);
+      newMsgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
+    } catch {}
+  }, 3000);
 }
 
 function appendMessage(msg) {
@@ -322,12 +322,15 @@ function appendMessage(msg) {
 document.getElementById('chat-send').addEventListener('click', sendMsg);
 document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
 
-function sendMsg() {
+async function sendMsg() {
   const input = document.getElementById('chat-input');
   const msg = input.value.trim();
   if (!msg || !currentChatProject) return;
-  socket.emit('send-message', { projectId: currentChatProject, message: msg });
   input.value = '';
+  try {
+    const saved = await apiFetch(`/api/student/chat/${currentChatProject}`, { method: 'POST', body: JSON.stringify({ message: msg }) });
+    if (saved.id > chatLastId) { chatLastId = saved.id; appendMessage(saved); }
+  } catch (e) { toast(e.message, 'error'); }
 }
 
 initNav();

@@ -4,24 +4,28 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'pbl_secret_key_2024';
 
-module.exports = function(db) {
+module.exports = function (db) {
   const router = express.Router();
 
-  router.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: 'Login va parol kerak' });
+  router.post('/login', async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      if (!username || !password) return res.status(400).json({ error: 'Login va parol kerak' });
 
-    const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
-    if (!user) return res.status(401).json({ error: 'Login yoki parol noto\'g\'ri' });
+      const user = await db.get('SELECT * FROM users WHERE username = ?', username);
+      if (!user) return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
 
-    const valid = bcrypt.compareSync(password, user.password);
-    if (!valid) return res.status(401).json({ error: 'Login yoki parol noto\'g\'ri' });
+      const valid = bcrypt.compareSync(password, user.password);
+      if (!valid) return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
 
-    const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role, full_name: user.full_name },
-      JWT_SECRET, { expiresIn: '24h' }
-    );
-    res.json({ token, role: user.role, full_name: user.full_name, id: user.id });
+      const token = jwt.sign(
+        { id: user.id, username: user.username, role: user.role, full_name: user.full_name },
+        JWT_SECRET, { expiresIn: '24h' }
+      );
+      res.json({ token, role: user.role, full_name: user.full_name, id: user.id });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
   });
 
   return router;
