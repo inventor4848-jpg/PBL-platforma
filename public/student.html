@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,171 +15,282 @@
       border-left: 5px solid var(--primary);
       margin-bottom: 1rem;
     }
-    .task-card.submitted { border-left-color: var(--warning); }
-    .task-card.graded { border-left-color: var(--success); }
-    .task-card.pending { border-left-color: var(--gray); }
-    .task-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.8rem; }
-    .task-title { font-size:1rem; font-weight:700; }
-    .task-meta { font-size:0.8rem; color:var(--gray); margin-bottom:1rem; }
-    .task-footer { display:flex; align-items:center; justify-content:space-between; padding-top:1rem; border-top:1px solid var(--border); }
+
+    .task-card.submitted {
+      border-left-color: var(--warning);
+    }
+
+    .task-card.graded {
+      border-left-color: var(--success);
+    }
+
+    .task-card.pending {
+      border-left-color: var(--gray);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.8rem;
+    }
+
+    .task-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .task-meta {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+
+    .task-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
   </style>
 </head>
+
 <body>
-<div class="panel-wrapper">
+  <div class="panel-wrapper">
 
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">PBL <span>Talaba</span></div>
-      <div class="sidebar-user" id="sidebar-username"></div>
-      <span class="sidebar-role" style="background:var(--accent)">Talaba</span>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="#" data-page="dashboard" class="active"><span class="nav-icon">📊</span> Dashboard</a>
-      <a href="#" data-page="tasks"><span class="nav-icon">📋</span> Mening vazifalarim</a>
-      <a href="#" data-page="chat"><span class="nav-icon">💬</span> Chat</a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn btn-sm btn-danger" style="width:100%" onclick="logout()">🚪 Chiqish</button>
-    </div>
-  </aside>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <style>
+          .sidebar-logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: .7rem
+          }
 
-  <main class="panel-main">
-    <div class="panel-topbar">
-      <h2 id="page-title">Dashboard</h2>
-      <div class="topbar-actions"><span id="topbar-user" style="font-size:0.85rem;color:var(--gray)"></span></div>
-    </div>
-    <div class="panel-content">
+          .sidebar-logo-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0
+          }
 
-      <!-- DASHBOARD -->
-      <div id="page-dashboard" class="fade-in">
-        <div class="stats-row" id="s-stats"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-          <div class="card">
-            <div class="card-header"><div class="card-title">📊 Mening natijalarim</div></div>
-            <div id="grade-overview" style="padding:1rem 0"></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">📋 So'nggi vazifalar</div></div>
-            <div id="recent-tasks"></div>
-          </div>
+          .sidebar-logo-text {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1.1
+          }
+
+          .sidebar-logo-text span {
+            color: var(--accent);
+            display: block;
+            font-size: .75rem;
+            font-weight: 600;
+            opacity: .9;
+            letter-spacing: 1px
+          }
+        </style>
+        <div class="sidebar-logo-wrap">
+          <svg class="sidebar-logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="24,3 44,14 44,34 24,45 4,34 4,14" fill="#5b4fcf" opacity="0.9" />
+            <polygon points="24,8 40,17 40,31 24,40 8,31 8,17" fill="#3d35a8" />
+            <text x="24" y="29" text-anchor="middle" fill="white" font-size="13" font-weight="900"
+              font-family="Segoe UI,sans-serif">PBL</text>
+          </svg>
+          <div class="sidebar-logo-text">PBL Platforma<span>TALABA</span></div>
         </div>
+        <div class="sidebar-user" id="sidebar-username" style="margin-top:.7rem;font-size:.85rem;opacity:.8"></div>
+        <span class="sidebar-role" style="background:var(--accent)">Talaba</span>
       </div>
-
-      <!-- TASKS -->
-      <div id="page-tasks" class="hidden fade-in">
-        <div class="tabs">
-          <div class="tab active" data-tab="all-tasks">Barchasi</div>
-          <div class="tab" data-tab="pending-tasks">Bajarilmagan</div>
-          <div class="tab" data-tab="submitted-tasks">Topshirilgan</div>
-          <div class="tab" data-tab="graded-tasks">Baholangan</div>
-        </div>
-        <div id="tab-all-tasks"><div id="tasks-all"></div></div>
-        <div id="tab-pending-tasks" class="hidden"><div id="tasks-pending"></div></div>
-        <div id="tab-submitted-tasks" class="hidden"><div id="tasks-submitted"></div></div>
-        <div id="tab-graded-tasks" class="hidden"><div id="tasks-graded"></div></div>
+      <nav class="sidebar-nav">
+        <a href="#" data-page="dashboard" class="active"><span class="nav-icon"><svg width="18" height="18"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg></span> Dashboard</a>
+        <a href="#" data-page="tasks"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            </svg></span> Mening vazifalarim</a>
+        <a href="#" data-page="chat"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+            </svg></span> Chat</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-sm btn-danger" style="width:100%" onclick="logout()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+          </svg>
+          Chiqish
+        </button>
       </div>
+    </aside>
 
-      <!-- CHAT -->
-      <div id="page-chat" class="hidden fade-in">
-        <div class="card">
-          <div class="card-header"><div class="card-title">💬 Loyiha chati</div></div>
-          <div style="display:grid;grid-template-columns:220px 1fr;gap:1rem;min-height:550px">
-            <div style="border-right:1px solid var(--border);padding-right:1rem">
-              <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--gray);margin-bottom:0.8rem">Loyihalar</div>
-              <div id="chat-project-list"></div>
-            </div>
-            <div style="display:flex;flex-direction:column">
-              <div id="chat-title" style="font-weight:700;margin-bottom:0.8rem;color:var(--primary)">Loyiha tanlang</div>
-              <div class="chat-messages" id="chat-messages" style="flex:1;border:1px solid var(--border);border-radius:var(--radius);background:var(--light)">
-                <div class="empty-state"><div class="icon">💬</div><p>Loyiha tanlang</p></div>
+    <main class="panel-main">
+      <div class="panel-topbar">
+        <h2 id="page-title">Dashboard</h2>
+        <div class="topbar-actions"><span id="topbar-user" style="font-size:0.85rem;color:var(--gray)"></span></div>
+      </div>
+      <div class="panel-content">
+
+        <!-- DASHBOARD -->
+        <div id="page-dashboard" class="fade-in">
+          <div class="stats-row" id="s-stats"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📊 Mening natijalarim</div>
               </div>
-              <div class="chat-input-area" id="chat-input-area" style="display:none">
-                <input type="text" class="form-control" id="chat-input" placeholder="Xabar yozing..." autocomplete="off">
-                <button class="btn btn-primary" id="chat-send">Yuborish</button>
+              <div id="grade-overview" style="padding:1rem 0"></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📋 So'nggi vazifalar</div>
+              </div>
+              <div id="recent-tasks"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TASKS -->
+        <div id="page-tasks" class="hidden fade-in">
+          <div class="tabs">
+            <div class="tab active" data-tab="all-tasks">Barchasi</div>
+            <div class="tab" data-tab="pending-tasks">Bajarilmagan</div>
+            <div class="tab" data-tab="submitted-tasks">Topshirilgan</div>
+            <div class="tab" data-tab="graded-tasks">Baholangan</div>
+          </div>
+          <div id="tab-all-tasks">
+            <div id="tasks-all"></div>
+          </div>
+          <div id="tab-pending-tasks" class="hidden">
+            <div id="tasks-pending"></div>
+          </div>
+          <div id="tab-submitted-tasks" class="hidden">
+            <div id="tasks-submitted"></div>
+          </div>
+          <div id="tab-graded-tasks" class="hidden">
+            <div id="tasks-graded"></div>
+          </div>
+        </div>
+
+        <!-- CHAT -->
+        <div id="page-chat" class="hidden fade-in">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">💬 Loyiha chati</div>
+            </div>
+            <div style="display:grid;grid-template-columns:220px 1fr;gap:1rem;min-height:550px">
+              <div style="border-right:1px solid var(--border);padding-right:1rem">
+                <div
+                  style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--gray);margin-bottom:0.8rem">
+                  Loyihalar</div>
+                <div id="chat-project-list"></div>
+              </div>
+              <div style="display:flex;flex-direction:column">
+                <div id="chat-title" style="font-weight:700;margin-bottom:0.8rem;color:var(--primary)">Loyiha tanlang
+                </div>
+                <div class="chat-messages" id="chat-messages"
+                  style="flex:1;border:1px solid var(--border);border-radius:var(--radius);background:var(--light)">
+                  <div class="empty-state">
+                    <div class="icon">💬</div>
+                    <p>Loyiha tanlang</p>
+                  </div>
+                </div>
+                <div class="chat-input-area" id="chat-input-area" style="display:none">
+                  <input type="text" class="form-control" id="chat-input" placeholder="Xabar yozing..."
+                    autocomplete="off">
+                  <button class="btn btn-primary" id="chat-send">Yuborish</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
+    </main>
+  </div>
 
-    </div>
-  </main>
-</div>
-
-<!-- Submit Modal -->
-<div class="modal-overlay" id="modal-submit">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Vazifani topshirish</div>
-      <button class="modal-close" onclick="closeModal('modal-submit')">✕</button>
-    </div>
-    <input type="hidden" id="submit-task-id">
-    <div class="form-group">
-      <label>Fayl yuklash (ixtiyoriy)</label>
-      <input type="file" class="form-control" id="submit-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar,.txt,.jpg,.png">
-    </div>
-    <p style="font-size:0.8rem;color:var(--gray)">Faylsiz ham topshirish mumkin. Topshirish tugmasi bosilganda o'qituvchiga ko'rinadi.</p>
-    <div class="modal-footer">
-      <button class="btn btn-gray btn-sm" onclick="closeModal('modal-submit')">Bekor</button>
-      <button class="btn btn-success btn-sm" onclick="submitTask()">📤 Topshirish</button>
+  <!-- Submit Modal -->
+  <div class="modal-overlay" id="modal-submit">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Vazifani topshirish</div>
+        <button class="modal-close" onclick="closeModal('modal-submit')">✕</button>
+      </div>
+      <input type="hidden" id="submit-task-id">
+      <div class="form-group">
+        <label>Fayl yuklash (ixtiyoriy)</label>
+        <input type="file" class="form-control" id="submit-file"
+          accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar,.txt,.jpg,.png">
+      </div>
+      <p style="font-size:0.8rem;color:var(--gray)">Faylsiz ham topshirish mumkin. Topshirish tugmasi bosilganda
+        o'qituvchiga ko'rinadi.</p>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-submit')">Bekor</button>
+        <button class="btn btn-success btn-sm" onclick="submitTask()">📤 Topshirish</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="/js/common.js"></script>
-<script>
-const user = requireAuth('student');
-document.getElementById('sidebar-username').textContent = user?.full_name || '';
-document.getElementById('topbar-user').textContent = user?.full_name || '';
+  <script src="/js/common.js"></script>
+  <script>
+    const user = requireAuth('student');
+    document.getElementById('sidebar-username').textContent = user?.full_name || '';
+    document.getElementById('topbar-user').textContent = user?.full_name || '';
 
-let currentChatProject = null, allTasks = [], chatLastId = 0, chatPollTimer = null;
+    let currentChatProject = null, allTasks = [], chatLastId = 0, chatPollTimer = null;
 
-document.querySelectorAll('.sidebar-nav a').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    switchPage(a.dataset.page);
-    document.querySelectorAll('.sidebar-nav a').forEach(x => x.classList.remove('active'));
-    a.classList.add('active');
-  });
-});
+    document.querySelectorAll('.sidebar-nav a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        switchPage(a.dataset.page);
+        document.querySelectorAll('.sidebar-nav a').forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+      });
+    });
 
-function switchPage(page) {
-  document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
-  document.getElementById('page-' + page)?.classList.remove('hidden');
-  const titles = { dashboard: 'Dashboard', tasks: 'Mening vazifalarim', chat: 'Chat' };
-  document.getElementById('page-title').textContent = titles[page] || page;
-  if (page === 'dashboard') loadDashboard();
-  if (page === 'tasks') loadTasks();
-  if (page === 'chat') loadChat();
-}
+    function switchPage(page) {
+      document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('page-' + page)?.classList.remove('hidden');
+      const titles = { dashboard: 'Dashboard', tasks: 'Mening vazifalarim', chat: 'Chat' };
+      document.getElementById('page-title').textContent = titles[page] || page;
+      if (page === 'dashboard') loadDashboard();
+      if (page === 'tasks') loadTasks();
+      if (page === 'chat') loadChat();
+    }
 
-// TABS for tasks
-document.querySelectorAll('#page-tasks .tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('#page-tasks .tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelectorAll('#page-tasks [id^="tab-"]').forEach(t => t.classList.add('hidden'));
-    document.getElementById('tab-' + tab.dataset.tab)?.classList.remove('hidden');
-  });
-});
+    // TABS for tasks
+    document.querySelectorAll('#page-tasks .tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#page-tasks .tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('#page-tasks [id^="tab-"]').forEach(t => t.classList.add('hidden'));
+        document.getElementById('tab-' + tab.dataset.tab)?.classList.remove('hidden');
+      });
+    });
 
-async function loadDashboard() {
-  const [stats, tasks] = await Promise.all([
-    apiFetch('/api/student/stats'),
-    apiFetch('/api/student/tasks')
-  ]);
-  allTasks = tasks;
+    async function loadDashboard() {
+      const [stats, tasks] = await Promise.all([
+        apiFetch('/api/student/stats'),
+        apiFetch('/api/student/tasks')
+      ]);
+      allTasks = tasks;
 
-  document.getElementById('s-stats').innerHTML = `
+      document.getElementById('s-stats').innerHTML = `
     <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-info"><h3>${stats.total}</h3><p>Jami vazifalar</p></div></div>
     <div class="stat-card warning"><div class="stat-icon">⏳</div><div class="stat-info"><h3>${stats.total - stats.submitted - stats.graded}</h3><p>Bajarilmagan</p></div></div>
     <div class="stat-card info"><div class="stat-icon">📤</div><div class="stat-info"><h3>${stats.submitted}</h3><p>Topshirilgan</p></div></div>
     <div class="stat-card success"><div class="stat-icon">🏆</div><div class="stat-info"><h3>${stats.avg_grade || '—'}</h3><p>O'rtacha ball</p></div></div>
   `;
 
-  const graded = tasks.filter(t => t.grade);
-  document.getElementById('grade-overview').innerHTML = graded.length ?
-    graded.map(t => `
+      const graded = tasks.filter(t => t.grade);
+      document.getElementById('grade-overview').innerHTML = graded.length ?
+        graded.map(t => `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border)">
         <div>
           <div style="font-weight:600;font-size:0.85rem">${t.title}</div>
@@ -186,9 +298,9 @@ async function loadDashboard() {
         </div>
         <div class="grade-circle ${gradeClass(t.grade)}">${t.grade}</div>
       </div>`).join('') :
-    '<div class="empty-state" style="padding:1.5rem"><div class="icon">📊</div><p>Hali baholangan vazifa yo\'q</p></div>';
+        '<div class="empty-state" style="padding:1.5rem"><div class="icon">📊</div><p>Hali baholangan vazifa yo\'q</p></div>';
 
-  document.getElementById('recent-tasks').innerHTML = tasks.slice(0,5).map(t => `
+      document.getElementById('recent-tasks').innerHTML = tasks.slice(0, 5).map(t => `
     <div style="display:flex;align-items:center;gap:0.8rem;padding:0.6rem 0;border-bottom:1px solid var(--border)">
       <div style="flex:1">
         <div style="font-weight:600;font-size:0.85rem">${t.title}</div>
@@ -196,24 +308,24 @@ async function loadDashboard() {
       </div>
       ${statusBadge(t.status)}
     </div>`).join('') || '<div class="empty-state" style="padding:1.5rem"><p>Vazifa yo\'q</p></div>';
-}
+    }
 
-async function loadTasks() {
-  const tasks = await apiFetch('/api/student/tasks');
-  allTasks = tasks;
-  renderTasksTo('tasks-all', tasks);
-  renderTasksTo('tasks-pending', tasks.filter(t => t.status === 'pending' || t.status === 'in_progress'));
-  renderTasksTo('tasks-submitted', tasks.filter(t => t.status === 'submitted'));
-  renderTasksTo('tasks-graded', tasks.filter(t => t.status === 'graded'));
-}
+    async function loadTasks() {
+      const tasks = await apiFetch('/api/student/tasks');
+      allTasks = tasks;
+      renderTasksTo('tasks-all', tasks);
+      renderTasksTo('tasks-pending', tasks.filter(t => t.status === 'pending' || t.status === 'in_progress'));
+      renderTasksTo('tasks-submitted', tasks.filter(t => t.status === 'submitted'));
+      renderTasksTo('tasks-graded', tasks.filter(t => t.status === 'graded'));
+    }
 
-function renderTasksTo(containerId, tasks) {
-  const el = document.getElementById(containerId);
-  if (!tasks.length) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><h3>Vazifa yo\'q</h3></div>';
-    return;
-  }
-  el.innerHTML = tasks.map(t => `
+    function renderTasksTo(containerId, tasks) {
+      const el = document.getElementById(containerId);
+      if (!tasks.length) {
+        el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><h3>Vazifa yo\'q</h3></div>';
+        return;
+      }
+      el.innerHTML = tasks.map(t => `
     <div class="task-card ${t.status}">
       <div class="task-header">
         <div class="task-title">${t.title}</div>
@@ -242,99 +354,100 @@ function renderTasksTo(containerId, tasks) {
           (t.file_path ? `<a href="/uploads/${t.file_path}" target="_blank" class="btn btn-info btn-sm">📄 Fayl</a>` : '')}
       </div>
     </div>`).join('');
-}
+    }
 
-function openSubmit(taskId) {
-  document.getElementById('submit-task-id').value = taskId;
-  document.getElementById('submit-file').value = '';
-  openModal('modal-submit');
-}
+    function openSubmit(taskId) {
+      document.getElementById('submit-task-id').value = taskId;
+      document.getElementById('submit-file').value = '';
+      openModal('modal-submit');
+    }
 
-async function submitTask() {
-  const taskId = document.getElementById('submit-task-id').value;
-  const fileInput = document.getElementById('submit-file');
-  const formData = new FormData();
-  if (fileInput.files[0]) formData.append('file', fileInput.files[0]);
+    async function submitTask() {
+      const taskId = document.getElementById('submit-task-id').value;
+      const fileInput = document.getElementById('submit-file');
+      const formData = new FormData();
+      if (fileInput.files[0]) formData.append('file', fileInput.files[0]);
 
-  try {
-    const res = await fetch(`/api/student/tasks/${taskId}/submit`, {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + getToken() },
-      body: formData
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    toast('Vazifa topshirildi!', 'success');
-    closeModal('modal-submit');
-    loadTasks();
-  } catch(e) { toast(e.message, 'error'); }
-}
+      try {
+        const res = await fetch(`/api/student/tasks/${taskId}/submit`, {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + getToken() },
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        toast('Vazifa topshirildi!', 'success');
+        closeModal('modal-submit');
+        loadTasks();
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-// CHAT
-async function loadChat() {
-  const projs = await apiFetch('/api/student/my-chats');
-  const list = document.getElementById('chat-project-list');
-  list.innerHTML = projs.map(p => `
+    // CHAT
+    async function loadChat() {
+      const projs = await apiFetch('/api/student/my-chats');
+      const list = document.getElementById('chat-project-list');
+      list.innerHTML = projs.map(p => `
     <div style="padding:0.6rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:500;margin-bottom:0.3rem;transition:background 0.2s"
-      onclick="joinChat(${p.id},'${p.title.replace(/'/g,"\\'")}',this)"
+      onclick="joinChat(${p.id},'${p.title.replace(/'/g, "\\'")}',this)"
       onmouseover="this.style.background='var(--primary-light)'"
       onmouseout="this.style.background=''">${p.title}</div>`).join('') ||
-    '<div style="color:var(--gray);font-size:0.8rem">Loyiha yo\'q</div>';
-}
+        '<div style="color:var(--gray);font-size:0.8rem">Loyiha yo\'q</div>';
+    }
 
-async function joinChat(projectId, title, el) {
-  if (chatPollTimer) clearInterval(chatPollTimer);
-  currentChatProject = projectId;
-  chatLastId = 0;
-  document.getElementById('chat-title').textContent = title;
-  document.querySelectorAll('#chat-project-list > div').forEach(d => d.style.background = '');
-  if (el) el.style.background = 'var(--primary-light)';
-  document.getElementById('chat-input-area').style.display = 'flex';
+    async function joinChat(projectId, title, el) {
+      if (chatPollTimer) clearInterval(chatPollTimer);
+      currentChatProject = projectId;
+      chatLastId = 0;
+      document.getElementById('chat-title').textContent = title;
+      document.querySelectorAll('#chat-project-list > div').forEach(d => d.style.background = '');
+      if (el) el.style.background = 'var(--primary-light)';
+      document.getElementById('chat-input-area').style.display = 'flex';
 
-  const msgs = await apiFetch(`/api/student/chat/${projectId}`);
-  const container = document.getElementById('chat-messages');
-  container.innerHTML = '';
-  msgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
-  container.scrollTop = container.scrollHeight;
+      const msgs = await apiFetch(`/api/student/chat/${projectId}`);
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = '';
+      msgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
+      container.scrollTop = container.scrollHeight;
 
-  chatPollTimer = setInterval(async () => {
-    if (!currentChatProject) return;
-    try {
-      const newMsgs = await apiFetch(`/api/student/chat/${currentChatProject}?last_id=${chatLastId}`);
-      newMsgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
-    } catch {}
-  }, 3000);
-}
+      chatPollTimer = setInterval(async () => {
+        if (!currentChatProject) return;
+        try {
+          const newMsgs = await apiFetch(`/api/student/chat/${currentChatProject}?last_id=${chatLastId}`);
+          newMsgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
+        } catch { }
+      }, 3000);
+    }
 
-function appendMessage(msg) {
-  const container = document.getElementById('chat-messages');
-  const isMe = msg.user_id == user.id;
-  const div = document.createElement('div');
-  div.className = `chat-bubble ${isMe ? 'mine' : 'other'}`;
-  div.innerHTML = `
-    ${!isMe ? `<div class="sender">${msg.full_name} <span class="badge badge-${msg.role==='teacher'?'primary':'gray'}" style="font-size:0.65rem">${msg.role==='teacher'?"O'qituvchi":"Talaba"}</span></div>` : ''}
+    function appendMessage(msg) {
+      const container = document.getElementById('chat-messages');
+      const isMe = msg.user_id == user.id;
+      const div = document.createElement('div');
+      div.className = `chat-bubble ${isMe ? 'mine' : 'other'}`;
+      div.innerHTML = `
+    ${!isMe ? `<div class="sender">${msg.full_name} <span class="badge badge-${msg.role === 'teacher' ? 'primary' : 'gray'}" style="font-size:0.65rem">${msg.role === 'teacher' ? "O'qituvchi" : "Talaba"}</span></div>` : ''}
     <div>${msg.message}</div>
     <div class="time">${formatDateTime(msg.created_at)}</div>`;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
 
-document.getElementById('chat-send').addEventListener('click', sendMsg);
-document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
+    document.getElementById('chat-send').addEventListener('click', sendMsg);
+    document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
 
-async function sendMsg() {
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if (!msg || !currentChatProject) return;
-  input.value = '';
-  try {
-    const saved = await apiFetch(`/api/student/chat/${currentChatProject}`, { method: 'POST', body: JSON.stringify({ message: msg }) });
-    if (saved.id > chatLastId) { chatLastId = saved.id; appendMessage(saved); }
-  } catch (e) { toast(e.message, 'error'); }
-}
+    async function sendMsg() {
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg || !currentChatProject) return;
+      input.value = '';
+      try {
+        const saved = await apiFetch(`/api/student/chat/${currentChatProject}`, { method: 'POST', body: JSON.stringify({ message: msg }) });
+        if (saved.id > chatLastId) { chatLastId = saved.id; appendMessage(saved); }
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-initNav();
-loadDashboard();
-</script>
+    initNav();
+    loadDashboard();
+  </script>
 </body>
+
 </html>

@@ -32,7 +32,8 @@ module.exports = function (db) {
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (task.status === 'graded') return res.status(400).json({ error: 'Baholangan vazifa qayta topshirilmaydi' });
       const filePath = req.file ? req.file.filename : task.file_path;
-      await db.run("UPDATE project_tasks SET status='submitted', file_path=?, submitted_at=NOW() WHERE id=?", filePath, req.params.taskId);
+      const originalFilename = req.file ? req.file.originalname : task.original_filename;
+      await db.run("UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, submitted_at=NOW() WHERE id=?", filePath, originalFilename, req.params.taskId);
       res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });

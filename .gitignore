@@ -3,3 +3,5 @@ uploads/
 server/pbl.db
 .env
 *.log
+
+.vercel
