@@ -1,5 +1,13 @@
 const express = require('express');
 const { authMiddleware, requireRole } = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const uploadDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../../uploads');
+if (!process.env.VERCEL && !fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+const upload = multer({ dest: uploadDir, limits: { fileSize: 20 * 1024 * 1024 } });
 
 module.exports = function (db) {
   const router = express.Router();
@@ -18,17 +26,33 @@ module.exports = function (db) {
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.post('/tasks/:taskId/submit', async (req, res) => {
+  router.post('/tasks/:taskId/submit', upload.single('file'), async (req, res) => {
     try {
       const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (task.status === 'graded') return res.status(400).json({ error: 'Baholangan vazifa qayta topshirilmaydi' });
 
-      const { file_data, original_filename } = req.body || {};
+      let newFileData = task.file_data;
+      let newOriginalFilename = task.original_filename;
+      let newFilePath = task.file_path;
 
-      const newFileData = file_data || task.file_data;
-      const newOriginalFilename = original_filename || task.original_filename;
-      const newFilePath = file_data ? ('db_' + Date.now() + '_' + original_filename) : task.file_path;
+      // Handle JSON Base64 approach (New Frontend)
+      if (req.body && req.body.file_data) {
+        newOriginalFilename = req.body.original_filename || 'vazifa';
+        newFileData = req.body.file_data;
+        newFilePath = 'db_' + Date.now() + '_' + newOriginalFilename;
+      }
+      // Handle FormData approach (Cached Old Frontend)
+      else if (req.file) {
+        newFilePath = req.file.filename;
+        newOriginalFilename = req.file.originalname;
+        newFileData = fs.readFileSync(req.file.path).toString('base64');
+        try { fs.unlinkSync(req.file.path); } catch (e) { } // Cleanup
+      }
+      // Failsafe validation
+      else {
+        return res.status(400).json({ error: "Fayl biriktirilmadi. Iltimos fayl tanlab qaytadan yuboring." });
+      }
 
       await db.run(
         "UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, file_data=?, submitted_at=NOW() WHERE id=?",
