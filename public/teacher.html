@@ -544,9 +544,9 @@
                   <td>${t.grade ? `<div class="grade-circle ${gradeClass(t.grade)}" style="width:36px;height:36px;font-size:0.9rem">${t.grade}</div>` : '—'}</td>
                   <td style="font-size:0.875rem">${formatDateTime(t.submitted_at)}</td>
                   <td style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap">
-                    ${t.has_file ? `<button onclick="downloadTask(${t.id}, '${t.original_filename || 'vazifa'}')" class="btn btn-sm btn-info" title="${t.original_filename || 'fayl'}">
+                    ${(t.status === 'submitted' || t.status === 'graded') ? `<button onclick="downloadTask(${t.id}, '${t.original_filename || 'vazifa'}')" class="btn btn-sm ${t.has_file ? 'btn-info' : 'btn-gray'}" title="${t.original_filename || (t.has_file ? 'fayl' : 'Fayl yuklanmagan')}">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                      Yuklab olish
+                      ${t.has_file ? 'Yuklab olish' : 'Fayl yo\'q'}
                     </button>` : ''}
                     ${t.status === 'submitted' ? `<button class="btn btn-sm btn-success" onclick="openGrade(${t.id})">Baholash</button>` : ''}
                     <button class="btn btn-sm btn-gray" onclick="editTask(${t.id}, '${t.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${(t.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${t.deadline ? t.deadline.slice(0, 10) : ''}')">✏️</button>
