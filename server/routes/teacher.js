@@ -227,17 +227,24 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
         WHERE pt.id=? AND p.teacher_id=?
       `, req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
-      if (!task.file_path) return res.status(404).json({ error: "Fayl topilmadi" });
+      if (!task.file_path && !task.file_data) return res.status(404).json({ error: "Fayl topilmadi" });
 
+      const originalName = task.original_filename || task.file_path || 'vazifa';
+      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(originalName)}`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+
+      // Serve from DB (base64) if available — persists across server restarts
+      if (task.file_data) {
+        const buf = Buffer.from(task.file_data, 'base64');
+        return res.end(buf);
+      }
+
+      // Fallback: try local filesystem (legacy uploads)
       const filePath = process.env.VERCEL
         ? path.join('/tmp', task.file_path)
         : path.join(__dirname, '../../uploads', task.file_path);
 
       if (!fs.existsSync(filePath)) return res.status(404).json({ error: "Fayl topilmadi (serverda yo'q)" });
-
-      const originalName = task.original_filename || task.file_path;
-      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(originalName)}"`);
-      res.setHeader('Content-Type', 'application/octet-stream');
       fs.createReadStream(filePath).pipe(res);
     } catch (e) { res.status(500).json({ error: e.message }); }
   });

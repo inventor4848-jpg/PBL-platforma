@@ -156,13 +156,15 @@ async function ensureInit() {
       feedback TEXT,
       file_path TEXT,
       original_filename TEXT,
+      file_data TEXT,
       submitted_at TIMESTAMPTZ,
       graded_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`;
 
-    // Migration: add original_filename if missing
+    // Migration: add original_filename and file_data if missing
     await sql`ALTER TABLE project_tasks ADD COLUMN IF NOT EXISTS original_filename TEXT`;
+    await sql`ALTER TABLE project_tasks ADD COLUMN IF NOT EXISTS file_data TEXT`;
 
     await sql`CREATE TABLE IF NOT EXISTS chat_messages (
       id SERIAL PRIMARY KEY,

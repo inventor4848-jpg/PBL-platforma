@@ -31,9 +31,24 @@ module.exports = function (db) {
       const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (task.status === 'graded') return res.status(400).json({ error: 'Baholangan vazifa qayta topshirilmaydi' });
-      const filePath = req.file ? req.file.filename : task.file_path;
-      const originalFilename = req.file ? req.file.originalname : task.original_filename;
-      await db.run("UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, submitted_at=NOW() WHERE id=?", filePath, originalFilename, req.params.taskId);
+
+      let filePath = task.file_path;
+      let originalFilename = task.original_filename;
+      let fileData = task.file_data;
+
+      if (req.file) {
+        filePath = req.file.filename;
+        originalFilename = req.file.originalname;
+        // Read file content and store as base64 in DB (persists across server restarts)
+        fileData = fs.readFileSync(req.file.path).toString('base64');
+        // Clean up local temp file
+        try { fs.unlinkSync(req.file.path); } catch (_) {}
+      }
+
+      await db.run(
+        "UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, file_data=?, submitted_at=NOW() WHERE id=?",
+        filePath, originalFilename, fileData, req.params.taskId
+      );
       res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
