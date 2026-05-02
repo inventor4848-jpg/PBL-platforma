@@ -1,9 +1,5 @@
 const express = require('express');
 const { authMiddleware, requireRole } = require('../middleware/auth');
-const multer = require('multer');
-
-// memoryStorage: file stored in RAM as Buffer — works on Vercel (no disk needed)
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 4 * 1024 * 1024 } });
 
 module.exports = function (db) {
   const router = express.Router();
@@ -22,25 +18,21 @@ module.exports = function (db) {
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.post('/tasks/:taskId/submit', upload.single('file'), async (req, res) => {
+  router.post('/tasks/:taskId/submit', async (req, res) => {
     try {
       const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (task.status === 'graded') return res.status(400).json({ error: 'Baholangan vazifa qayta topshirilmaydi' });
 
-      let filePath = task.file_path;
-      let originalFilename = task.original_filename;
-      let fileData = task.file_data;
+      const { file_data, original_filename } = req.body || {};
 
-      if (req.file) {
-        originalFilename = req.file.originalname;
-        fileData = req.file.buffer.toString('base64');
-        filePath = 'db_' + Date.now() + '_' + originalFilename;
-      }
+      const newFileData = file_data || task.file_data;
+      const newOriginalFilename = original_filename || task.original_filename;
+      const newFilePath = file_data ? ('db_' + Date.now() + '_' + original_filename) : task.file_path;
 
       await db.run(
         "UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, file_data=?, submitted_at=NOW() WHERE id=?",
-        filePath, originalFilename, fileData, req.params.taskId
+        newFilePath, newOriginalFilename, newFileData, req.params.taskId
       );
       res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }

@@ -329,13 +329,21 @@
       const file = fileInput.files[0];
 
       try {
-        const formData = new FormData();
-        if (file) formData.append('file', file);
+        let file_data = null, original_filename = null;
+        if (file) {
+          original_filename = file.name;
+          file_data = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = () => reject(new Error('Faylni o\'qib bo\'lmadi'));
+            reader.readAsDataURL(file);
+          });
+        }
 
         const res = await fetch(`/api/student/tasks/${taskId}/submit`, {
           method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + getToken() },
-          body: formData
+          headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file_data, original_filename })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
