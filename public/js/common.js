@@ -23,7 +23,7 @@ async function apiFetch(url, opts = {}) {
 
 function logout() {
   localStorage.clear();
-  window.location.href = '/login.html';
+  window.location.href = '/login.html?v=' + Date.now();
 }
 
 function toast(msg, type = 'info') {
@@ -79,8 +79,8 @@ function statusBadge(s) {
 function requireAuth(role) {
   const user = getUser();
   const token = getToken();
-  if (!token || !user) { window.location.href = '/login.html'; return null; }
-  if (role && user.role !== role) { window.location.href = '/login.html'; return null; }
+  if (!token || !user) { window.location.href = '/login.html?v=' + Date.now(); return null; }
+  if (role && user.role !== role) { window.location.href = '/login.html?v=' + Date.now(); return null; }
   return user;
 }
 
