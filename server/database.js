@@ -75,24 +75,32 @@ async function ensureInit() {
   try {
     await sql`SELECT 1`;
 
-    // Check if users table has correct schema
-    const schemaOk = await sql`
+    // Check if users table AND all required columns exist
+    const usersOk = await sql`
       SELECT 1 FROM information_schema.columns
       WHERE table_name = 'users' AND column_name = 'password'
     `;
 
-    if (!schemaOk.length) {
-      // Drop all tables (wrong or missing schema)
-      await sql`DROP TABLE IF EXISTS chat_messages`;
-      await sql`DROP TABLE IF EXISTS project_tasks`;
-      await sql`DROP TABLE IF EXISTS projects`;
-      await sql`DROP TABLE IF EXISTS users`;
-      await sql`DROP TABLE IF EXISTS groups`;
-      await sql`DROP TABLE IF EXISTS departments`;
-      await sql`DROP TABLE IF EXISTS faculties`;
+    const allTablesOk = await sql`
+      SELECT COUNT(*) as cnt FROM information_schema.tables
+      WHERE table_schema = 'public'
+        AND table_name IN ('users','faculties','departments','groups','projects','project_tasks','chat_messages')
+    `;
+
+    const tableCount = parseInt(allTablesOk[0]?.cnt || '0');
+
+    if (!usersOk.length || tableCount < 7) {
+      // Drop all tables in correct dependency order with CASCADE to avoid FK errors
+      await sql`DROP TABLE IF EXISTS chat_messages CASCADE`;
+      await sql`DROP TABLE IF EXISTS project_tasks CASCADE`;
+      await sql`DROP TABLE IF EXISTS projects CASCADE`;
+      await sql`DROP TABLE IF EXISTS users CASCADE`;
+      await sql`DROP TABLE IF EXISTS groups CASCADE`;
+      await sql`DROP TABLE IF EXISTS departments CASCADE`;
+      await sql`DROP TABLE IF EXISTS faculties CASCADE`;
     }
 
-    // Create tables
+    // Create tables (IF NOT EXISTS is safe to run every time)
     await sql`CREATE TABLE IF NOT EXISTS faculties (
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
@@ -160,6 +168,7 @@ async function ensureInit() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`;
 
+    // Create admin if not exists
     const admin = await db.get('SELECT id FROM users WHERE username = ?', '123123*');
     if (!admin) {
       const hash = bcrypt.hashSync('123123*', 10);
