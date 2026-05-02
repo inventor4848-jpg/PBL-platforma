@@ -68,69 +68,6 @@ const db = {
   }
 };
 
-const SCHEMA = [
-  `CREATE TABLE IF NOT EXISTS faculties (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-  )`,
-  `CREATE TABLE IF NOT EXISTS departments (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    faculty_id INTEGER NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-  )`,
-  `CREATE TABLE IF NOT EXISTS groups (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    department_id INTEGER NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-  )`,
-  `CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    full_name TEXT NOT NULL,
-    role TEXT NOT NULL,
-    group_id INTEGER,
-    department_id INTEGER,
-    faculty_id INTEGER,
-    avatar TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-  )`,
-  `CREATE TABLE IF NOT EXISTS projects (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT,
-    teacher_id INTEGER NOT NULL,
-    group_id INTEGER,
-    status TEXT DEFAULT 'active',
-    deadline DATE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-  )`,
-  `CREATE TABLE IF NOT EXISTS project_tasks (
-    id SERIAL PRIMARY KEY,
-    project_id INTEGER NOT NULL,
-    student_id INTEGER NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT,
-    status TEXT DEFAULT 'pending',
-    grade INTEGER,
-    feedback TEXT,
-    file_path TEXT,
-    submitted_at TIMESTAMPTZ,
-    graded_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-  )`,
-  `CREATE TABLE IF NOT EXISTS chat_messages (
-    id SERIAL PRIMARY KEY,
-    project_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    message TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-  )`
-];
-
 let _initialized = false;
 
 async function ensureInit() {
@@ -138,35 +75,90 @@ async function ensureInit() {
   try {
     await sql`SELECT 1`;
 
-    // Check if schema is correct (password column must exist)
+    // Check if users table has correct schema
     const schemaOk = await sql`
-      SELECT column_name FROM information_schema.columns
-      WHERE table_name='users' AND column_name='password'
+      SELECT 1 FROM information_schema.columns
+      WHERE table_name = 'users' AND column_name = 'password'
     `;
 
     if (!schemaOk.length) {
-      // Drop all tables and recreate with correct schema
-      const drops = [
-        'DROP TABLE IF EXISTS chat_messages',
-        'DROP TABLE IF EXISTS project_tasks',
-        'DROP TABLE IF EXISTS projects',
-        'DROP TABLE IF EXISTS users',
-        'DROP TABLE IF EXISTS groups',
-        'DROP TABLE IF EXISTS departments',
-        'DROP TABLE IF EXISTS faculties',
-      ];
-      for (const d of drops) {
-        const parts = [d];
-        Object.assign(parts, { raw: [d] });
-        try { await sql(parts); } catch {}
-      }
+      // Drop all tables (wrong or missing schema)
+      await sql`DROP TABLE IF EXISTS chat_messages`;
+      await sql`DROP TABLE IF EXISTS project_tasks`;
+      await sql`DROP TABLE IF EXISTS projects`;
+      await sql`DROP TABLE IF EXISTS users`;
+      await sql`DROP TABLE IF EXISTS groups`;
+      await sql`DROP TABLE IF EXISTS departments`;
+      await sql`DROP TABLE IF EXISTS faculties`;
     }
 
-    for (const stmt of SCHEMA) {
-      const parts = [stmt];
-      Object.assign(parts, { raw: [stmt] });
-      try { await sql(parts); } catch {}
-    }
+    // Create tables
+    await sql`CREATE TABLE IF NOT EXISTS faculties (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE IF NOT EXISTS departments (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      faculty_id INTEGER NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE IF NOT EXISTS groups (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      department_id INTEGER NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      full_name TEXT NOT NULL,
+      role TEXT NOT NULL,
+      group_id INTEGER,
+      department_id INTEGER,
+      faculty_id INTEGER,
+      avatar TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE IF NOT EXISTS projects (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      description TEXT,
+      teacher_id INTEGER NOT NULL,
+      group_id INTEGER,
+      status TEXT DEFAULT 'active',
+      deadline DATE,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE IF NOT EXISTS project_tasks (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER NOT NULL,
+      student_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      status TEXT DEFAULT 'pending',
+      grade INTEGER,
+      feedback TEXT,
+      file_path TEXT,
+      submitted_at TIMESTAMPTZ,
+      graded_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE IF NOT EXISTS chat_messages (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      message TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
 
     const admin = await db.get('SELECT id FROM users WHERE username = ?', '123123*');
     if (!admin) {
