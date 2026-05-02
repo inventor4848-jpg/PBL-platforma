@@ -74,7 +74,7 @@
               <div class="card-header">
                 <div class="card-title">📈 Loyihalar holati</div>
               </div>
-              <canvas id="chart-projects" height="200"></canvas>
+              <canvas id="chart-projects" height="120"></canvas>
             </div>
             <div class="card">
               <div class="card-header">
@@ -445,16 +445,16 @@
     async function loadDashboard() {
       const stats = await apiFetch('/api/admin/stats');
       document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-info"><h3>${stats.teachers}</h3><p>O'qituvchilar</p></div></div>
-    <div class="stat-card accent"><div class="stat-icon">🎓</div><div class="stat-info"><h3>${stats.students}</h3><p>Talabalar</p></div></div>
-    <div class="stat-card success"><div class="stat-icon">📋</div><div class="stat-info"><h3>${stats.projects}</h3><p>Loyihalar</p></div></div>
-    <div class="stat-card info"><div class="stat-icon">✅</div><div class="stat-info"><h3>${stats.tasks_graded}</h3><p>Baholangan</p></div></div>
-    <div class="stat-card danger"><div class="stat-icon">⏳</div><div class="stat-info"><h3>${stats.tasks_submitted}</h3><p>Kutilmoqda</p></div></div>
+    <div class="stat-card"><div class="stat-info"><h3>${stats.teachers}</h3><p>O'qituvchilar</p></div></div>
+    <div class="stat-card accent"><div class="stat-info"><h3>${stats.students}</h3><p>Talabalar</p></div></div>
+    <div class="stat-card success"><div class="stat-info"><h3>${stats.projects}</h3><p>Loyihalar</p></div></div>
+    <div class="stat-card info"><div class="stat-info"><h3>${stats.tasks_graded}</h3><p>Baholangan</p></div></div>
+    <div class="stat-card danger"><div class="stat-info"><h3>${stats.tasks_submitted}</h3><p>Kutilmoqda</p></div></div>
   `;
       document.getElementById('structure-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-icon">🏛️</div><div class="stat-info"><h3>${stats.faculties}</h3><p>Fakultetlar</p></div></div>
-    <div class="stat-card accent"><div class="stat-icon">🏢</div><div class="stat-info"><h3>${stats.departments}</h3><p>Kafedralar</p></div></div>
-    <div class="stat-card success"><div class="stat-icon">👨‍👩‍👧‍👦</div><div class="stat-info"><h3>${stats.groups}</h3><p>Guruhlar</p></div></div>
+    <div class="stat-card"><div class="stat-info"><h3>${stats.faculties}</h3><p>Fakultetlar</p></div></div>
+    <div class="stat-card accent"><div class="stat-info"><h3>${stats.departments}</h3><p>Kafedralar</p></div></div>
+    <div class="stat-card success"><div class="stat-info"><h3>${stats.groups}</h3><p>Guruhlar</p></div></div>
   `;
 
       if (chartProjects) chartProjects.destroy();

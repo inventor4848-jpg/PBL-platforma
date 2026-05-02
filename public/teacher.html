@@ -412,10 +412,10 @@
       ]);
       myProjects = projs;
       document.getElementById('t-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5b4fcf" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg></div><div class="stat-info"><h3>${stats.projects}</h3><p>Loyihalarim</p></div></div>
-    <div class="stat-card info"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="2"><rect x="2" y="5" width="20" height="16" rx="2"/><path d="M16 3v4M8 3v4M2 9h20"/></svg></div><div class="stat-info"><h3>${stats.tasks_total}</h3><p>Jami vazifalar</p></div></div>
-    <div class="stat-card warning"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f39c12" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="stat-info"><h3>${stats.tasks_submitted}</h3><p>Baholash kutmoqda</p></div></div>
-    <div class="stat-card success"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-info"><h3>${stats.tasks_graded}</h3><p>Baholangan</p></div></div>
+    <div class="stat-card"><div class="stat-info"><h3>${stats.projects}</h3><p>Loyihalarim</p></div></div>
+    <div class="stat-card info"><div class="stat-info"><h3>${stats.tasks_total}</h3><p>Jami vazifalar</p></div></div>
+    <div class="stat-card warning"><div class="stat-info"><h3>${stats.tasks_submitted}</h3><p>Baholash kutmoqda</p></div></div>
+    <div class="stat-card success"><div class="stat-info"><h3>${stats.tasks_graded}</h3><p>Baholangan</p></div></div>
   `;
 
       if (tChart) tChart.destroy();
@@ -511,10 +511,10 @@
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
-        <div class="stat-card"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5b4fcf" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg></div><div class="stat-info"><h3>${tasks.length}</h3><p>Jami vazifa</p></div></div>
-        <div class="stat-card warning"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f39c12" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="stat-info"><h3>${submitted.length}</h3><p>Kutilmoqda</p></div></div>
-        <div class="stat-card success"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-info"><h3>${tasks.filter(t => t.status === 'graded').length}</h3><p>Baholangan</p></div></div>
-        <div class="stat-card info"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div class="stat-info"><h3>${tasks.filter(t => t.grade).length ? Math.round(tasks.filter(t => t.grade).reduce((a, b) => a + b.grade, 0) / tasks.filter(t => t.grade).length) : 0}</h3><p>O'rtacha ball</p></div></div>
+        <div class="stat-card"><div class="stat-info"><h3>${tasks.length}</h3><p>Jami vazifa</p></div></div>
+        <div class="stat-card warning"><div class="stat-info"><h3>${submitted.length}</h3><p>Kutilmoqda</p></div></div>
+        <div class="stat-card success"><div class="stat-info"><h3>${tasks.filter(t => t.status === 'graded').length}</h3><p>Baholangan</p></div></div>
+        <div class="stat-card info"><div class="stat-info"><h3>${tasks.filter(t => t.grade).length ? Math.round(tasks.filter(t => t.grade).reduce((a, b) => a + b.grade, 0) / tasks.filter(t => t.grade).length) : 0}</h3><p>O'rtacha ball</p></div></div>
       </div>
     </div>
 

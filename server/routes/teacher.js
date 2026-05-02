@@ -1,14 +1,8 @@
 const express = require('express');
 const { authMiddleware, requireRole } = require('../middleware/auth');
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
-
-const uploadDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../../uploads');
-if (!process.env.VERCEL && !fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const upload = multer({ dest: uploadDir });
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
@@ -227,24 +221,25 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
         WHERE pt.id=? AND p.teacher_id=?
       `, req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
-      if (!task.file_path && !task.file_data) return res.status(404).json({ error: "Fayl topilmadi" });
+      if (!task.file_path && !task.file_data) return res.status(404).json({ error: "Talaba hali fayl yuklamagan" });
 
-      const originalName = task.original_filename || task.file_path || 'vazifa';
-      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(originalName)}`);
-      res.setHeader('Content-Type', 'application/octet-stream');
-
-      // Serve from DB (base64) if available — persists across server restarts
+      // Serve from DB (base64) — reliable across server restarts
       if (task.file_data) {
+        const originalName = task.original_filename || task.file_path || 'vazifa';
+        res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(originalName)}`);
+        res.setHeader('Content-Type', 'application/octet-stream');
         const buf = Buffer.from(task.file_data, 'base64');
         return res.end(buf);
       }
 
-      // Fallback: try local filesystem (legacy uploads)
-      const filePath = process.env.VERCEL
-        ? path.join('/tmp', task.file_path)
-        : path.join(__dirname, '../../uploads', task.file_path);
-
-      if (!fs.existsSync(filePath)) return res.status(404).json({ error: "Fayl topilmadi (serverda yo'q)" });
+      // Fallback: local filesystem (for dev/local only)
+      const filePath = path.join(__dirname, '../../uploads', task.file_path);
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "Fayl yo'qolgan — talaba qayta topshirishi kerak" });
+      }
+      const originalName = task.original_filename || task.file_path || 'vazifa';
+      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(originalName)}`);
+      res.setHeader('Content-Type', 'application/octet-stream');
       fs.createReadStream(filePath).pipe(res);
     } catch (e) { res.status(500).json({ error: e.message }); }
   });

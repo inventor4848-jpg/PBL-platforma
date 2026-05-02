@@ -243,10 +243,10 @@
       allTasks = tasks;
 
       document.getElementById('s-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-info"><h3>${stats.total}</h3><p>Jami vazifalar</p></div></div>
-    <div class="stat-card warning"><div class="stat-icon">⏳</div><div class="stat-info"><h3>${stats.total - stats.submitted - stats.graded}</h3><p>Bajarilmagan</p></div></div>
-    <div class="stat-card info"><div class="stat-icon">📤</div><div class="stat-info"><h3>${stats.submitted}</h3><p>Topshirilgan</p></div></div>
-    <div class="stat-card success"><div class="stat-icon">🏆</div><div class="stat-info"><h3>${stats.avg_grade || '—'}</h3><p>O'rtacha ball</p></div></div>
+    <div class="stat-card"><div class="stat-info"><h3>${stats.total}</h3><p>Jami vazifalar</p></div></div>
+    <div class="stat-card warning"><div class="stat-info"><h3>${stats.total - stats.submitted - stats.graded}</h3><p>Bajarilmagan</p></div></div>
+    <div class="stat-card info"><div class="stat-info"><h3>${stats.submitted}</h3><p>Topshirilgan</p></div></div>
+    <div class="stat-card success"><div class="stat-info"><h3>${stats.avg_grade || '—'}</h3><p>O'rtacha ball</p></div></div>
   `;
 
       const graded = tasks.filter(t => t.grade);
