@@ -221,30 +221,51 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
+  router.get('/tasks/:taskId/debug', async (req, res) => {
+    try {
+      const task = await db.get('SELECT * FROM project_tasks WHERE id=?', req.params.taskId);
+      if (!task) return res.json({ error: "No task" });
+      res.json({
+        id: task.id,
+        status: task.status,
+        file_path: task.file_path,
+        has_file_data: !!task.file_data,
+        file_data_length: task.file_data ? task.file_data.length : 0,
+        original_filename: task.original_filename
+      });
+    } catch (e) { res.json({ error: e.message }); }
+  });
+
   // FAYL YUKLAB OLISH (o'qituvchi)
   router.get('/tasks/:taskId/download', async (req, res) => {
     try {
       const task = await db.get(`
-        SELECT pt.* FROM project_tasks pt JOIN projects p ON pt.project_id=p.id
+        SELECT pt.*, p.teacher_id 
+        FROM project_tasks pt 
+        JOIN projects p ON pt.project_id=p.id 
         WHERE pt.id=? AND p.teacher_id=?
       `, req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
-      if (!task.file_path && !task.file_data) return res.status(404).json({ error: "Talaba hali fayl yuklamagan" });
 
-      // Serve from DB (base64) — reliable across server restarts
-      if (task.file_data) {
+      // DB based file transfer
+      if (task.file_data && task.file_data.length > 10) {
+        let cleanBase64 = task.file_data.replace(/^data:.*?;base64,/, ''); // safety clear
+        const buf = Buffer.from(cleanBase64, 'base64');
         const originalName = task.original_filename || task.file_path || 'vazifa';
         res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(originalName)}`);
         res.setHeader('Content-Type', 'application/octet-stream');
-        const buf = Buffer.from(task.file_data, 'base64');
+        res.setHeader('Content-Length', buf.length);
         return res.end(buf);
       }
 
-      // Fallback: local filesystem (for dev/local only)
+      if (!task.file_path) return res.status(404).json({ error: "Talaba fayl yuklamagan yoxud fayl bazaga yetib kelmagan" });
+
+      // Fallback local FS
       const filePath = path.join(__dirname, '../../uploads', task.file_path);
       if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ error: "Fayl yo'qolgan — talaba qayta topshirishi kerak" });
+        return res.status(404).json({ error: "Fayl vaqtinchalik xotiradan o'chgan (" + task.file_path + "). Talaba qayta yuklashi shart." });
       }
+
       const originalName = task.original_filename || task.file_path || 'vazifa';
       res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(originalName)}`);
       res.setHeader('Content-Type', 'application/octet-stream');
