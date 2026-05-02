@@ -20,7 +20,7 @@ app.use(async (req, res, next) => {
     next();
   } catch (e) {
     console.error('DB init error:', e);
-    res.status(500).json({ error: 'Baza ulanmadi' });
+    res.status(500).json({ error: e.message });
   }
 });
 
