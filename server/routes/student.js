@@ -32,14 +32,12 @@ module.exports = function (db) {
       let originalFilename = task.original_filename;
       let fileData = task.file_data;
 
-      // Ensure req.body has the data
-      if (!req.body.file_data || !req.body.original_filename) {
-        return res.status(400).json({ error: "Fayl yuborilmadi (yoki brauzer keshini tozalang: Ctrl+F5)." });
+      // If file data sent via JSON body (base64), save it
+      if (req.body.original_filename && req.body.file_data) {
+        originalFilename = req.body.original_filename;
+        fileData = req.body.file_data;
+        filePath = 'db_' + Date.now() + '_' + originalFilename;
       }
-      originalFilename = req.body.original_filename;
-      fileData = req.body.file_data;
-      // In browser upload, we won't need a static file_path, but keeping convention
-      filePath = 'db_' + Date.now() + '_' + originalFilename;
 
       await db.run(
         "UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, file_data=?, submitted_at=NOW() WHERE id=?",
