@@ -2,7 +2,6 @@ const express = require('express');
 const { authMiddleware, requireRole } = require('../middleware/auth');
 const path = require('path');
 const fs = require('fs');
-const https = require('https');
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
@@ -124,7 +123,7 @@ module.exports = function (db) {
     try {
       const project = await db.get(
         'SELECT p.*, g.name as group_name FROM projects p LEFT JOIN groups g ON p.group_id=g.id WHERE p.id=? AND p.teacher_id=?',
-        req.params.id, req.user.id
+        parseInt(req.params.id), parseInt(req.user.id)
       );
       if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!project.group_id) return res.status(400).json({ error: 'Loyihaga guruh biriktirilmagan' });
@@ -185,16 +184,16 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
   // AI VAZIFA — TASDIQLASH (preview ni DB ga saqlash)
   router.post('/projects/:id/ai-assign-confirm', async (req, res) => {
     try {
-      const { assignments } = req.body;
-      const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', req.params.id, req.user.id);
+      const { assignments, deadline } = req.body;
+      const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
       if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!assignments || !assignments.length) return res.status(400).json({ error: 'Vazifalar kerak' });
 
       await db.transaction(async (client) => {
         for (const a of assignments) {
           await client.query(
-            'INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?)',
-            [req.params.id, a.student_id, a.title, a.description || null]
+            'INSERT INTO project_tasks (project_id, student_id, title, description, deadline) VALUES (?,?,?,?,?)',
+            [parseInt(req.params.id), a.student_id, a.title, a.description || null, deadline || null]
           );
         }
       });

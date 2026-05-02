@@ -326,25 +326,30 @@
 
   <!-- AI Assign Modal -->
   <div class="modal-overlay" id="modal-ai-assign">
-    <div class="modal" style="max-width:600px">
+    <div class="modal" style="max-width:640px;max-height:90vh;overflow-y:auto">
       <div class="modal-header">
         <div class="modal-title">✨ AI orqali vazifa taqsimlash</div>
         <button class="modal-close" onclick="closeModal('modal-ai-assign')">✕</button>
       </div>
-      <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem">Guruh a'zolari soniga qarab vazifalar avtomatik
-        yaratiladi.</p>
       <input type="hidden" id="ai-project-id">
+      <input type="hidden" id="ai-group-id">
 
-      <div style="text-align:center; padding:1rem 0">
-        <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:200px">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-            style="margin-right:5px;vertical-align:middle;">
-            <circle cx="12" cy="12" r="3" />
-            <path
-              d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
-          </svg>
-          AI orqali taqsimlash
-        </button>
+      <div id="ai-setup-section">
+        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.2rem;flex-wrap:wrap">
+          <div>
+            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">TOPSHIRISH MUDDATI</label>
+            <input type="date" class="form-control" id="ai-deadline" style="width:180px">
+          </div>
+          <div style="flex:1;min-width:200px">
+            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">GURUH A'ZOLARI</label>
+            <div id="ai-students-list"></div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:0.5rem 0 0.2rem">
+          <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:220px" disabled>
+            ✨ AI bilan vazifa yaratish
+          </button>
+        </div>
       </div>
 
       <div id="ai-result" style="margin-top:1rem"></div>
@@ -505,7 +510,7 @@
           <div style="font-size:0.9rem;color:var(--gray);margin-top:0.2rem">${project.description || ''}</div>
         </div>
         <div style="display:flex;gap:0.5rem">
-          <button class="btn btn-accent btn-sm" onclick="openAiAssign(${project.id})">✨ AI Vazifa</button>
+          <button class="btn btn-accent btn-sm" onclick="openAiAssign(${project.id},${project.group_id||0})">✨ AI Vazifa</button>
           <button class="btn btn-info btn-sm" onclick="openAssignAll(${project.id})">📤 Taqsimlash</button>
           <button class="btn btn-primary btn-sm" onclick="openAddTask(${project.id},${project.group_id || 0})">+ Qoshish</button>
         </div>
@@ -524,12 +529,13 @@
         ${tasks.length ? `
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Talaba</th><th>Vazifa</th><th>Holat</th><th>Ball</th><th>Topshirildi</th><th>Amal</th></tr></thead>
+            <thead><tr><th>Talaba</th><th>Vazifa</th><th>Muddat</th><th>Holat</th><th>Ball</th><th>Topshirildi</th><th>Amal</th></tr></thead>
             <tbody>
               ${tasks.map(t => `
                 <tr class="${t.status === 'submitted' ? 'task-row-submitted' : ''}">
                   <td><strong>${t.student_name}</strong></td>
                   <td><span style="font-size:0.95rem">${t.title}</span><br><small style="color:var(--gray)">${t.description || ''}</small></td>
+                  <td style="font-size:0.82rem;color:var(--gray)">${t.deadline ? t.deadline.slice(0,10) : '—'}</td>
                   <td>${statusBadge(t.status)}</td>
                   <td>${t.grade ? `<div class="grade-circle ${gradeClass(t.grade)}" style="width:36px;height:36px;font-size:0.9rem">${t.grade}</div>` : '—'}</td>
                   <td style="font-size:0.875rem">${formatDateTime(t.submitted_at)}</td>
@@ -640,89 +646,120 @@
     }
 
     // AI VAZIFA MODAL LOGIC
-    function openAiAssign(projectId) {
+    function openAiAssign(projectId, groupId) {
       document.getElementById('ai-project-id').value = projectId;
+      document.getElementById('ai-group-id').value = groupId || '';
       document.getElementById('ai-result').innerHTML = '';
+      document.getElementById('ai-generate-btn').disabled = true;
+      document.getElementById('ai-generate-btn').textContent = '✨ AI bilan vazifa yaratish';
       aiCurrentAssignments = null;
       aiCurrentProjectId = null;
+
+      // Default deadline: bugundan 7 kun keyin
+      const d = new Date();
+      d.setDate(d.getDate() + 7);
+      document.getElementById('ai-deadline').value = d.toISOString().split('T')[0];
+
       openModal('modal-ai-assign');
+
+      // Guruh talabalarini yuklash
+      if (!groupId || groupId == 0) {
+        document.getElementById('ai-students-list').innerHTML =
+          '<span style="color:var(--danger);font-size:0.88rem">Loyihaga guruh biriktirilmagan</span>';
+        return;
+      }
+      document.getElementById('ai-students-list').innerHTML =
+        '<span style="color:var(--gray);font-size:0.88rem">⏳ Yuklanmoqda...</span>';
+
+      apiFetch(`/api/teacher/groups/${groupId}/students`)
+        .then(students => {
+          if (!students.length) {
+            document.getElementById('ai-students-list').innerHTML =
+              '<span style="color:var(--danger);font-size:0.88rem">Guruhda talabalar yo\'q</span>';
+            return;
+          }
+          document.getElementById('ai-students-list').innerHTML =
+            '<div style="display:flex;flex-wrap:wrap;gap:0.4rem">' +
+            students.map((s, i) => `
+              <span style="display:inline-flex;align-items:center;gap:0.35rem;background:var(--primary-light);color:var(--primary);border-radius:20px;padding:0.25rem 0.7rem;font-size:0.82rem;font-weight:600">
+                <span style="background:var(--primary);color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem">${i+1}</span>
+                ${s.full_name}
+              </span>`).join('') +
+            '</div>';
+          document.getElementById('ai-generate-btn').disabled = false;
+        })
+        .catch(() => {
+          document.getElementById('ai-students-list').innerHTML =
+            '<span style="color:var(--danger);font-size:0.88rem">Talabalar yuklanmadi</span>';
+        });
     }
 
     async function aiGenerateTasks() {
       const projectId = document.getElementById('ai-project-id').value;
-      if (!projectId) return toast('Avval loyiha tanlang', 'error');
+      if (!projectId) return;
 
       const btn = document.getElementById('ai-generate-btn');
       btn.disabled = true;
       btn.textContent = '⏳ AI ishlayapti...';
-
       document.getElementById('ai-result').innerHTML = `
-    <div class="ai-loading">
-      <div class="ai-spinner"></div>
-      <div style="font-size:1rem;font-weight:600;color:var(--primary)">Groq AI vazifalarni tahlil qilmoqda...</div>
-      <div style="font-size:0.875rem;color:var(--gray)">Guruh a'zolari soniga qarab bosqichlarga ajratyapti</div>
-    </div>`;
+        <div class="ai-loading">
+          <div class="ai-spinner"></div>
+          <div style="font-size:1rem;font-weight:600;color:var(--primary)">Groq AI vazifalarni yaratmoqda...</div>
+          <div style="font-size:0.85rem;color:var(--gray)">Har bir talabaga alohida bosqich tayyorlanmoqda</div>
+        </div>`;
 
       try {
         const data = await apiFetch(`/api/teacher/projects/${projectId}/ai-assign-preview`, { method: 'POST', body: JSON.stringify({}) });
         aiCurrentAssignments = data.assignments;
         aiCurrentProjectId = projectId;
+        const deadline = document.getElementById('ai-deadline').value;
 
         document.getElementById('ai-result').innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
-        <div>
-          <div style="font-size:1.1rem;font-weight:700;color:var(--primary)">✅ AI ${data.total} ta vazifa taklif qilyapti</div>
-          <div style="font-size:0.875rem;color:var(--gray);margin-top:0.2rem">Quyidagi taqsimotni tekshirib, tasdiqlang</div>
-        </div>
-        <div style="display:flex;gap:0.5rem">
-          <button class="btn btn-gray btn-sm" onclick="aiGenerateTasks()">🔄 Qayta yaratish</button>
-          <button class="btn btn-success" onclick="aiConfirmTasks()" style="font-size:1rem">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-            Tasdiqlash va saqlash
-          </button>
-        </div>
-      </div>
-      ${data.assignments.map((a, i) => `
-        <div class="ai-assignment-card">
-          <div class="ai-step-badge">${i + 1}</div>
-          <div class="task-info">
-            <div class="student-name">👤 ${a.student_name}</div>
-            <div class="task-title">${a.title}</div>
-            <div class="task-desc">${a.description}</div>
+          <hr style="margin:0.5rem 0 1rem;border-color:var(--border)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+            <div>
+              <div style="font-size:1rem;font-weight:700;color:var(--primary)">✅ ${data.total} ta talabaga vazifa tayyor</div>
+              <div style="font-size:0.82rem;color:var(--gray);margin-top:0.15rem">Muddat: <strong>${deadline}</strong> — tekshirib tasdiqlang</div>
+            </div>
+            <button class="btn btn-gray btn-sm" onclick="aiGenerateTasks()">🔄 Qayta yaratish</button>
           </div>
-        </div>`).join('')}
-    `;
+          ${data.assignments.map((a, i) => `
+            <div class="ai-assignment-card">
+              <div class="ai-step-badge">${i + 1}</div>
+              <div class="task-info">
+                <div class="student-name">👤 ${a.student_name}</div>
+                <div class="task-title">${a.title}</div>
+                <div class="task-desc">${a.description}</div>
+              </div>
+            </div>`).join('')}
+          <div style="text-align:right;margin-top:1rem">
+            <button class="btn btn-success" onclick="aiConfirmTasks()" style="min-width:160px;font-size:1rem">
+              ✅ Tasdiqlang
+            </button>
+          </div>`;
       } catch (e) {
-        document.getElementById('ai-result').innerHTML = `
-      <div class="alert alert-danger">❌ ${e.message}</div>`;
+        document.getElementById('ai-result').innerHTML =
+          `<div class="alert alert-danger" style="margin-top:0.5rem">❌ ${e.message}</div>`;
         toast(e.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> AI bilan taqsimlash`;
+        btn.textContent = '✨ Qayta yaratish';
       }
     }
 
     async function aiConfirmTasks() {
       if (!aiCurrentAssignments || !aiCurrentProjectId) return;
+      const deadline = document.getElementById('ai-deadline').value || null;
       try {
         const r = await apiFetch(`/api/teacher/projects/${aiCurrentProjectId}/ai-assign-confirm`, {
-          method: 'POST', body: JSON.stringify({ assignments: aiCurrentAssignments })
+          method: 'POST', body: JSON.stringify({ assignments: aiCurrentAssignments, deadline })
         });
         toast(`✅ ${r.assigned} ta talabaga vazifa berildi!`, 'success');
-        document.getElementById('ai-result').innerHTML = `
-      <div class="alert alert-success" style="font-size:1rem; margin-top:10px">
-        ✅ <strong>${r.assigned} ta</strong> talabaga vazifalar muvaffaqiyatli taqsimlandi!
-      </div>`;
-        const currentModalProjId = aiCurrentProjectId;
+        const prevId = aiCurrentProjectId;
         aiCurrentAssignments = null;
         aiCurrentProjectId = null;
-
-        setTimeout(() => {
-          closeModal('modal-ai-assign');
-          loadProjectDetail(currentModalProjId);
-        }, 1500);
-        aiCurrentAssignments = null;
-        aiCurrentProjectId = null;
+        closeModal('modal-ai-assign');
+        loadProjectDetail(prevId);
       } catch (e) { toast(e.message, 'error'); }
     }
 
