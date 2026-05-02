@@ -1,9 +1,9 @@
 const express = require('express');
 const { authMiddleware, requireRole } = require('../middleware/auth');
-const path = require('path');
-const fs = require('fs');
+const multer = require('multer');
 
-// Note: Removed multer completely to avoid Vercel serverless request body conflicts
+// memoryStorage: file stored in RAM as Buffer — works on Vercel (no disk needed)
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 4 * 1024 * 1024 } });
 
 module.exports = function (db) {
   const router = express.Router();
@@ -22,7 +22,7 @@ module.exports = function (db) {
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.post('/tasks/:taskId/submit', async (req, res) => {
+  router.post('/tasks/:taskId/submit', upload.single('file'), async (req, res) => {
     try {
       const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
@@ -32,10 +32,9 @@ module.exports = function (db) {
       let originalFilename = task.original_filename;
       let fileData = task.file_data;
 
-      // If file data sent via JSON body (base64), save it
-      if (req.body.original_filename && req.body.file_data) {
-        originalFilename = req.body.original_filename;
-        fileData = req.body.file_data;
+      if (req.file) {
+        originalFilename = req.file.originalname;
+        fileData = req.file.buffer.toString('base64');
         filePath = 'db_' + Date.now() + '_' + originalFilename;
       }
 
