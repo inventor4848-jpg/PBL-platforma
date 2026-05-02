@@ -32,6 +32,23 @@ async function groqChat(messages) {
 
 module.exports = function (db) {
   const router = express.Router();
+
+  // DEBUG endpoint for easy browser access
+  router.get('/tasks/:taskId/debug', async (req, res) => {
+    try {
+      const task = await db.get('SELECT * FROM project_tasks WHERE id=?', req.params.taskId);
+      if (!task) return res.json({ error: "No task" });
+      res.json({
+        id: task.id,
+        status: task.status,
+        file_path: task.file_path,
+        has_file_data: !!task.file_data,
+        file_data_length: task.file_data ? task.file_data.length : 0,
+        original_filename: task.original_filename
+      });
+    } catch (e) { res.json({ error: e.message }); }
+  });
+
   router.use(authMiddleware, requireRole('teacher'));
 
   router.get('/dashboard', async (req, res) => {
