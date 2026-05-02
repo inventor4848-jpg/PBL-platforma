@@ -15,823 +15,820 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <style>
-          .sidebar-logo-wrap {
-            display: flex;
-            align-items: center;
-            gap: .7rem
-          }
-
-          .sidebar-logo-icon {
-            width: 40px;
-            height: 40px;
-            flex-shrink: 0
-          }
-
-          <div style="font-size:1.6rem; font-weight:900; color:white; letter-spacing:1px; margin-bottom:0.4rem;">PBL<span style="color:var(--accent)">.</span></div><div class="sidebar-user" id="sidebar-username" style="font-size:0.9rem;opacity:0.9"></div><span class="sidebar-role" style="margin-top:0.3rem">Admin</span></div><nav class="sidebar-nav"><a href="#" data-page="dashboard" class="active"><span class="nav-icon"><svg width="18" height="18"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg></span>Dashboard</a><a href="#" data-page="structure"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 10v11M12 10v11M16 10v11" /></svg></span>Tuzilma boshqaruvi</a><a href="#" data-page="users"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg></span>Foydalanuvchilar</a><a href="#" data-page="projects"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7h18M3 12h18M3 17h18" /></svg></span>PBL Loyihalar</a></nav><div class="sidebar-footer"><button class="btn btn-sm btn-danger" style="width:100%" onclick="logout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>Chiqish </button></div></aside>< !-- MAIN --><main class="panel-main"><div class="panel-topbar"><div style="display:flex; align-items:center; gap:1rem;"><button id="sidebar-toggle"
-          style="background:none;border:none;font-size:1.4rem;cursor:pointer;display:none;">☰</button><h2 id="page-title">Dashboard</h2></div><div class="topbar-actions"><span id="topbar-user" style="font-size:0.85rem; color:var(--gray)"></span></div></div><div class="panel-content">< !-- DASHBOARD PAGE --><div id="page-dashboard" class="fade-in"><div class="stats-row" id="stats-row"></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;" class="dashboard-charts"><div class="card"><div class="card-header"><div class="card-title">📈 Loyihalar holati</div></div><canvas id="chart-projects" height="200"></canvas></div><div class="card"><div class="card-header"><div class="card-title">📋 Vazifalar holati</div></div><canvas id="chart-tasks" height="200"></canvas></div></div><div class="card" style="margin-top:1.5rem;"><div class="card-header"><div class="card-title">🗓️ Tizim haqida ma'lumot</div>
- </div><div class="stats-row" id="structure-stats"></div></div></div>< !-- STRUCTURE PAGE --><div id="page-structure" class="hidden fade-in"><div class="tabs"><div class="tab active" data-tab="faculties">Fakultetlar</div><div class="tab" data-tab="departments">Kafedralar</div><div class="tab" data-tab="groups">Guruhlar</div></div>< !-- Faculties tab --><div id="tab-faculties"><div class="card"><div class="card-header"><div class="card-title">Fakultetlar ro'yxati</div>
- <button class="btn btn-primary btn-sm" onclick="openModal('modal-faculty')">+Qo'shish</button>
- </div><div class="table-wrap"><table id="faculty-table"><thead><tr><th>#</th><th>Nomi</th><th>Yaratilgan</th><th>Amallar</th></tr></thead><tbody></tbody></table></div></div></div>< !-- Departments tab --><div id="tab-departments" class="hidden"><div class="card"><div class="card-header"><div class="card-title">Kafedralar ro'yxati</div>
- <button class="btn btn-primary btn-sm" onclick="openModal('modal-department')">+Qo'shish</button>
- </div><div class="table-wrap"><table id="dept-table"><thead><tr><th>#</th><th>Nomi</th><th>Fakultet</th><th>Yaratilgan</th><th>Amallar</th></tr></thead><tbody></tbody></table></div></div></div>< !-- Groups tab --><div id="tab-groups" class="hidden"><div class="card"><div class="card-header"><div class="card-title">Guruhlar ro'yxati</div>
- <button class="btn btn-primary btn-sm" onclick="openModal('modal-group')">+Qo'shish</button>
- </div><div class="table-wrap"><table id="group-table"><thead><tr><th>#</th><th>Nomi</th><th>Kafedra</th><th>Fakultet</th><th>Yaratilgan</th><th>Amallar</th></tr></thead><tbody></tbody></table></div></div></div></div>< !-- USERS PAGE --><div id="page-users" class="hidden fade-in"><div class="tabs"><div class="tab active" data-tab="teachers-tab">O'qituvchilar</div>
- <div class="tab" data-tab="students-tab">Talabalar</div></div><div id="tab-teachers-tab"><div class="card"><div class="card-header"><div class="card-title">O'qituvchilar</div>
- <button class="btn btn-primary btn-sm" onclick="openAddUser('teacher')">+O'qituvchi qo' shish</button></div><div class="table-wrap"><table id="teacher-table"><thead><tr><th>#</th><th>F.I.Sh</th><th>Login</th><th>Kafedra</th><th>Qo'shildi</th>
- <th>Amallar</th></tr></thead><tbody></tbody></table></div></div></div><div id="tab-students-tab" class="hidden"><div class="card"><div class="card-header"><div class="card-title">Talabalar</div><button class="btn btn-primary btn-sm" onclick="openAddUser('student')">+Talaba qo'shish</button>
- </div><div class="table-wrap"><table id="student-table"><thead><tr><th>#</th><th>F.I.Sh</th><th>Login</th><th>Guruh</th><th>Qo'shildi</th>
- <th>Amallar</th></tr></thead><tbody></tbody></table></div></div></div></div>< !-- PROJECTS PAGE --><div id="page-projects" class="hidden fade-in"><div class="card"><div class="card-header"><div class="card-title">PBL Loyihalar</div><button class="btn btn-primary btn-sm" onclick="openModal('modal-project')">+Loyiha qo'shish</button>
- </div><div class="table-wrap"><table id="project-table"><thead><tr><th>#</th><th>Sarlavha</th><th>O'qituvchi</th>
- <th>Guruh</th><th>Holat</th><th>Muddat</th><th>Amallar</th></tr></thead><tbody></tbody></table></div></div></div></div></main></div>< !-- MODALS -->< !-- Faculty Modal --><div class="modal-overlay" id="modal-faculty"><div class="modal"><div class="modal-header"><div class="modal-title" id="faculty-modal-title">Fakultet qo'shish</div>
- <button class="modal-close" onclick="closeModal('modal-faculty')">✕</button></div><input type="hidden" id="faculty-edit-id"><div class="form-group"><label>Fakultet nomi</label><input type="text" class="form-control" id="faculty-name" placeholder="Masalan: Kompyuter fanlari"></div><div class="modal-footer"><button class="btn btn-gray btn-sm" onclick="closeModal('modal-faculty')">Bekor</button><button class="btn btn-primary btn-sm" onclick="saveFaculty()">Saqlash</button></div></div></div>< !-- Department Modal --><div class="modal-overlay" id="modal-department"><div class="modal"><div class="modal-header"><div class="modal-title" id="dept-modal-title">Kafedra qo'shish</div>
- <button class="modal-close" onclick="closeModal('modal-department')">✕</button></div><input type="hidden" id="dept-edit-id"><div class="form-group"><label>Kafedra nomi</label><input type="text" class="form-control" id="dept-name"></div><div class="form-group"><label>Fakultet</label><select class="form-control" id="dept-faculty"></select></div><div class="modal-footer"><button class="btn btn-gray btn-sm" onclick="closeModal('modal-department')">Bekor</button><button class="btn btn-primary btn-sm" onclick="saveDept()">Saqlash</button></div></div></div>< !-- Group Modal --><div class="modal-overlay" id="modal-group"><div class="modal"><div class="modal-header"><div class="modal-title" id="group-modal-title">Guruh qo'shish</div>
- <button class="modal-close" onclick="closeModal('modal-group')">✕</button></div><input type="hidden" id="group-edit-id"><div class="form-group"><label>Guruh nomi</label><input type="text" class="form-control" id="group-name"></div><div class="form-group"><label>Kafedra</label><select class="form-control" id="group-dept"></select></div><div class="modal-footer"><button class="btn btn-gray btn-sm" onclick="closeModal('modal-group')">Bekor</button><button class="btn btn-primary btn-sm" onclick="saveGroup()">Saqlash</button></div></div></div>< !-- User Modal --><div class="modal-overlay" id="modal-user"><div class="modal"><div class="modal-header"><div class="modal-title" id="user-modal-title">Foydalanuvchi qo'shish</div>
- <button class="modal-close" onclick="closeModal('modal-user')">✕</button></div><input type="hidden" id="user-edit-id"><input type="hidden" id="user-role"><div class="form-group"><label>To'liq ism</label>
- <input type="text" class="form-control" id="user-fullname"></div><div class="form-group"><label>Login</label><input type="text" class="form-control" id="user-username"></div><div class="form-group"><label>Parol <span id="pwd-hint" style="font-size:0.75rem; color:var(--gray)">(tahrirlashda bo'sh qoldirsa
- o'zgarmaydi)</span></label>
- <input type="password" class="form-control" id="user-password" > </div> <div class="form-group" id="user-group-row" > <label>Guruh</label> <select class="form-control" id="user-group" ></select> </div> <div class="form-group" id="user-dept-row" > <label>Kafedra</label> <select class="form-control" id="user-dept" ></select> </div> <div class="modal-footer" > <button class="btn btn-gray btn-sm" onclick="closeModal('modal-user')" >Bekor</button> <button class="btn btn-primary btn-sm" onclick="saveUser()" >Saqlash</button> </div> </div> </div> < !-- Project Modal --> <div class="modal-overlay" id="modal-project" > <div class="modal" > <div class="modal-header" > <div class="modal-title" >Loyiha qo'shish</div>
- <button class="modal-close" onclick="closeModal('modal-project')" >✕</button> </div> <div class="form-group" > <label>Loyiha sarlavhasi</label> <input type="text" class="form-control" id="proj-title" > </div> <div class="form-group" > <label>Tavsif</label> <textarea class="form-control" id="proj-desc" rows="3" ></textarea> </div> <div class="form-group" > <label>O'qituvchi</label>
- <select class="form-control" id="proj-teacher" ></select> </div> <div class="form-group" > <label>Guruh</label> <select class="form-control" id="proj-group" > <option value="" >— Tanlang —</option> </select> </div> <div class="form-group" > <label>Muddat</label> <input type="date" class="form-control" id="proj-deadline" > </div> <div class="modal-footer" > <button class="btn btn-gray btn-sm" onclick="closeModal('modal-project')" >Bekor</button> <button class="btn btn-primary btn-sm" onclick="saveProject()" >Saqlash</button> </div> </div> </div> <script src="/js/common.js" ></script> <script> const user=requireAuth('admin');
-            if (user) document.getElementById('sidebar-username').textContent=user.full_name;
-            document.getElementById('topbar-user').textContent=user?.full_name || '';
-
-            let faculties=[], departments=[], groups=[], allUsers=[], teachers=[], projects=[];
-
-            // PAGE NAVIGATION
-            document.querySelectorAll('.sidebar-nav a').forEach(a=> {
-                a.addEventListener('click', e=> {
-                    e.preventDefault();
-                    switchPage(a.dataset.page);
-                    document.querySelectorAll('.sidebar-nav a').forEach(x=> x.classList.remove('active'));
-                    a.classList.add('active');
-                  });
-              });
-
-            function switchPage(page) {
-              document.querySelectorAll('[id^="page-"]').forEach(el=> el.classList.add('hidden'));
-              document.getElementById('page-' + page)?.classList.remove('hidden');
-
-              document.getElementById('page-title').textContent= {
-                dashboard: 'Dashboard', structure: 'Tuzilma boshqaruvi',
-                users: 'Foydalanuvchilar', projects: 'PBL Loyihalar'
-              }
-
-              [page] || page;
-              if (page==='dashboard') loadDashboard();
-              if (page==='structure') loadStructure();
-              if (page==='users') loadUsers();
-              if (page==='projects') loadProjects();
-            }
-
-            // TAB NAVIGATION
-            document.querySelectorAll('.tab').forEach(tab=> {
-                tab.addEventListener('click', ()=> {
-                    const parent=tab.closest('[id^="page-"]') || tab.parentElement;
-                    parent.querySelectorAll('.tab').forEach(t=> t.classList.remove('active'));
-                    tab.classList.add('active');
-                    const allTabs=parent.querySelectorAll('[id^="tab-"]');
-                    allTabs.forEach(t=> t.classList.add('hidden'));
-                    const target=parent.querySelector('#tab-' + tab.dataset.tab);
-                    if (target) target.classList.remove('hidden');
-                  });
-              });
-
-            // DASHBOARD
-            let chartProjects, chartTasks;
-
-            async function loadDashboard() {
-              const stats=await apiFetch('/api/admin/stats');
-
-              document.getElementById('stats-row').innerHTML=` <div class="stat-card" ><div class="stat-icon" >👥</div><div class="stat-info" ><h3>$ {
-                stats.teachers
-              }
-
-              </h3><p>O'qituvchilar</p></div></div>
- <div class="stat-card accent" ><div class="stat-icon" >🎓</div><div class="stat-info" ><h3>$ {
-                stats.students
-              }
-
-              </h3><p>Talabalar</p></div></div> <div class="stat-card success" ><div class="stat-icon" >📋</div><div class="stat-info" ><h3>$ {
-                stats.projects
-              }
-
-              </h3><p>Loyihalar</p></div></div> <div class="stat-card info" ><div class="stat-icon" >✅</div><div class="stat-info" ><h3>$ {
-                stats.tasks_graded
-              }
-
-              </h3><p>Baholangan</p></div></div> <div class="stat-card danger" ><div class="stat-icon" >⏳</div><div class="stat-info" ><h3>$ {
-                stats.tasks_submitted
-              }
-
-              </h3><p>Kutilmoqda</p></div></div> `;
-
-              document.getElementById('structure-stats').innerHTML=` <div class="stat-card" ><div class="stat-icon" >🏛️</div><div class="stat-info" ><h3>$ {
-                stats.faculties
-              }
-
-              </h3><p>Fakultetlar</p></div></div> <div class="stat-card accent" ><div class="stat-icon" >🏢</div><div class="stat-info" ><h3>$ {
-                stats.departments
-              }
-
-              </h3><p>Kafedralar</p></div></div> <div class="stat-card success" ><div class="stat-icon" >👨‍👩‍👧‍👦</div><div class="stat-info" ><h3>$ {
-                stats.groups
-              }
-
-              </h3><p>Guruhlar</p></div></div> `;
-
-              if (chartProjects) chartProjects.destroy();
-              if (chartTasks) chartTasks.destroy();
-
-              chartProjects=new Chart(document.getElementById('chart-projects'), {
-
-                type: 'doughnut',
-                data: {
-
-                  labels: ['Faol', 'Yakunlangan', 'Arxiv'],
-                  datasets: [ {
-                    data: [stats.projects, 0, 0], backgroundColor: ['#5b4fcf', '#27ae60', '#6c757d'], borderWidth: 0
-                  }
-
-                  ]
-                }
-
-                ,
-                options: {
-                  plugins: {
-                    legend: {
-                      position: 'bottom'
-                    }
-                  }
-
-                  , cutout: '65%'
-                }
-              });
-
-            chartTasks=new Chart(document.getElementById('chart-tasks'), {
-
-              type: 'bar',
-              data: {
-
-                labels: ['Kutilmoqda', 'Topshirildi', 'Baholandi'],
-                datasets: [ {
-                  data: [stats.tasks_pending, stats.tasks_submitted, stats.tasks_graded], backgroundColor: ['#f39c12', '#2980b9', '#27ae60'], borderRadius: 6
-                }
-
-                ]
-              }
-
-              ,
-              options: {
-                plugins: {
-                  legend: {
-                    display: false
-                  }
-                }
-
-                , scales: {
-                  y: {
-                    beginAtZero: true, ticks: {
-                      stepSize: 1
-                    }
-                  }
-                }
-              }
-            });
-          }
-
-          // STRUCTURE
-          async function loadStructure() {
-            [faculties, departments, groups]=await Promise.all([ apiFetch('/api/admin/faculties'),
-              apiFetch('/api/admin/departments'),
-              apiFetch('/api/admin/groups')]);
-            renderFaculties(); renderDepts(); renderGroups();
-          }
-
-          function renderFaculties() {
-            const tbody=document.querySelector('#faculty-table tbody');
-
-            tbody.innerHTML=faculties.length ? faculties.map((f, i)=> ` <tr> <td>$ {
-                i + 1
-              }
-
-              </td> <td><strong>$ {
-                f.name
-              }
-
-              </strong></td> <td>$ {
-                formatDate(f.created_at)
-              }
-
-              </td> <td> <button class="btn btn-sm btn-info" onclick="editFaculty(${f.id},'${f.name.replace(/'/g, " \\'")}')">✏️</button>
- <button class="btn btn-sm btn-danger" onclick="deleteFaculty(${f.id})" >🗑️</button> </td> </tr>`).join('') : '<tr><td colspan="4" class="empty-state"><div>Hozircha ma\'lumot yo\'q</div></td></tr>';
-          }
-
-          function renderDepts() {
-            const tbody=document.querySelector('#dept-table tbody');
-
-            tbody.innerHTML=departments.length ? departments.map((d, i)=> ` <tr> <td>$ {
-                i + 1
-              }
-
-              </td> <td><strong>$ {
-                d.name
-              }
-
-              </strong></td> <td><span class="badge badge-primary" >$ {
-                d.faculty_name
-              }
-
-              </span></td> <td>$ {
-                formatDate(d.created_at)
-              }
-
-              </td> <td> <button class="btn btn-sm btn-info" onclick="editDept(${d.id},'${d.name.replace(/'/g, " \\'")}', $ {
-                d.faculty_id
-              })">✏️</button>
- <button class="btn btn-sm btn-danger" onclick="deleteDept(${d.id})">🗑️</button></td></tr>`).join('') : '<tr><td colspan="5"><div class="empty-state"><div class="icon">🏢</div><h3>Kafedra yo\'q</h3></div></td></tr>';
-          }
-
-          function renderGroups() {
-            const tbody=document.querySelector('#group-table tbody');
-
-            tbody.innerHTML=groups.length ? groups.map((g, i)=> ` <tr> <td>$ {
-                i + 1
-              }
-
-              </td> <td><strong>$ {
-                g.name
-              }
-
-              </strong></td> <td>$ {
-                g.department_name
-              }
-
-              </td> <td><span class="badge badge-info" >$ {
-                g.faculty_name
-              }
-
-              </span></td> <td>$ {
-                formatDate(g.created_at)
-              }
-
-              </td> <td> <button class="btn btn-sm btn-info" onclick="editGroup(${g.id},'${g.name.replace(/'/g, " \\'")}', $ {
-                g.department_id
-              })">✏️</button>
- <button class="btn btn-sm btn-danger" onclick="deleteGroup(${g.id})">🗑️</button></td></tr>`).join('') : '<tr><td colspan="6"><div class="empty-state"><p>Guruh yo\'q</p></div></td></tr>';
-          }
-
-          async function saveFaculty() {
-            const name=document.getElementById('faculty-name').value.trim();
-            const id=document.getElementById('faculty-edit-id').value;
-            if ( !name) return toast('Nomi kerak', 'error');
-
-            try {
-              if (id) {
-                await apiFetch(`/api/admin/faculties/$ {
-                    id
-                  }
-
-                  `, {
-                  method: 'PUT', body: JSON.stringify({
-                    name
-                  })
-              });
-          }
-
-          else {
-            await apiFetch('/api/admin/faculties', {
-              method: 'POST', body: JSON.stringify({
-                name
-              })
-          });
-          }
-
-          toast('Saqlandi', 'success');
-          closeModal('modal-faculty');
-          loadStructure();
-          }
-
-          catch (e) {
-            toast(e.message, 'error');
-          }
-          }
-
-          function editFaculty(id, name) {
-            document.getElementById('faculty-edit-id').value=id;
-            document.getElementById('faculty-name').value=name;
-            document.getElementById('faculty-modal-title').textContent='Fakultetni tahrirlash';
-            openModal('modal-faculty');
-          }
-
-          async function deleteFaculty(id) {
-            if ( !confirm('O\'chirishni tasdiqlaysizmi?')) return;
-
-            await apiFetch(`/api/admin/faculties/$ {
-                id
-              }
-
-              `, {
-              method: 'DELETE'
-            });
-          toast('O\'chirildi', 'success');
-          loadStructure();
-          }
-
-          async function saveDept() {
-            const name=document.getElementById('dept-name').value.trim();
-            const faculty_id=document.getElementById('dept-faculty').value;
-            const id=document.getElementById('dept-edit-id').value;
-            if ( !name || !faculty_id) return toast('Barcha maydonlar kerak', 'error');
-
-            try {
-              if (id) await apiFetch(`/api/admin/departments/$ {
-                  id
-                }
-
-                `, {
-                method: 'PUT', body: JSON.stringify({
-                  name, faculty_id
-                })
-            });
-
-          else await apiFetch('/api/admin/departments', {
-            method: 'POST', body: JSON.stringify({
-              name, faculty_id
-            })
-          });
-          toast('Saqlandi', 'success');
-          closeModal('modal-department');
-          loadStructure();
-          }
-
-          catch (e) {
-            toast(e.message, 'error');
-          }
-          }
-
-          function editDept(id, name, fid) {
-            document.getElementById('dept-edit-id').value=id;
-            document.getElementById('dept-name').value=name;
-            document.getElementById('dept-faculty').value=fid;
-            document.getElementById('dept-modal-title').textContent='Kafedrni tahrirlash';
-            openModal('modal-department');
-          }
-
-          async function deleteDept(id) {
-            if ( !confirm('O\'chirishni tasdiqlaysizmi?')) return;
-
-            await apiFetch(`/api/admin/departments/$ {
-                id
-              }
-
-              `, {
-              method: 'DELETE'
-            });
-          toast('O\'chirildi', 'success');
-          loadStructure();
-          }
-
-          async function saveGroup() {
-            const name=document.getElementById('group-name').value.trim();
-            const department_id=document.getElementById('group-dept').value;
-            const id=document.getElementById('group-edit-id').value;
-            if ( !name || !department_id) return toast('Barcha maydonlar kerak', 'error');
-
-            try {
-              if (id) await apiFetch(`/api/admin/groups/$ {
-                  id
-                }
-
-                `, {
-                method: 'PUT', body: JSON.stringify({
-                  name, department_id
-                })
-            });
-
-          else await apiFetch('/api/admin/groups', {
-            method: 'POST', body: JSON.stringify({
-              name, department_id
-            })
-          });
-          toast('Saqlandi', 'success');
-          closeModal('modal-group');
-          loadStructure();
-          }
-
-          catch (e) {
-            toast(e.message, 'error');
-          }
-          }
-
-          function editGroup(id, name, did) {
-            document.getElementById('group-edit-id').value=id;
-            document.getElementById('group-name').value=name;
-            document.getElementById('group-dept').value=did;
-            document.getElementById('group-modal-title').textContent='Guruhni tahrirlash';
-            openModal('modal-group');
-          }
-
-          async function deleteGroup(id) {
-            if ( !confirm('O\'chirishni tasdiqlaysizmi?')) return;
-
-            await apiFetch(`/api/admin/groups/$ {
-                id
-              }
-
-              `, {
-              method: 'DELETE'
-            });
-          toast('O\'chirildi', 'success');
-          loadStructure();
-          }
-
-          // Populate selects when opening modals
-          document.getElementById('modal-department').querySelector('.modal-close').addEventListener('click', ()=> closeModal('modal-department'));
-
-          document.querySelector('[onclick="openModal(\'modal-department\')"]')?.addEventListener('click', ()=> {
-              document.getElementById('dept-edit-id').value='';
-              document.getElementById('dept-name').value='';
-              document.getElementById('dept-modal-title').textContent='Kafedra qo\'shish';
-              const sel=document.getElementById('dept-faculty');
-
-              sel.innerHTML=faculties.map(f=> `<option value="${f.id}" >$ {
-                  f.name
-                }
-
-                </option>`).join('');
-            });
-
-          // Override openModal for dept and group to populate selects
-          const origOpen=openModal;
-
-          window.openModal=function (id) {
-            if (id==='modal-department') {
-              const sel=document.getElementById('dept-faculty');
-
-              sel.innerHTML='<option value="">— Tanlang —</option>'+faculties.map(f=> `<option value="${f.id}" >$ {
-                  f.name
-                }
-
-                </option>`).join('');
-            }
-
-            if (id==='modal-group') {
-              const sel=document.getElementById('group-dept');
-
-              sel.innerHTML='<option value="">— Tanlang —</option>'+departments.map(d=> `<option value="${d.id}" >$ {
-                  d.name
-                }
-
-                </option>`).join('');
-            }
-
-            if (id==='modal-faculty') {
-              document.getElementById('faculty-edit-id').value='';
-              document.getElementById('faculty-name').value='';
-              document.getElementById('faculty-modal-title').textContent='Fakultet qo\'shish';
-            }
-
-            if (id==='modal-group') {
-              document.getElementById('group-edit-id').value='';
-              document.getElementById('group-name').value='';
-              document.getElementById('group-modal-title').textContent='Guruh qo\'shish';
-            }
-
-            origOpen(id);
-          }
-
-          ;
-
-          // USERS
-          async function loadUsers() {
-            allUsers=await apiFetch('/api/admin/users');
-            if ( !departments.length) departments=await apiFetch('/api/admin/departments');
-            if ( !groups.length) groups=await apiFetch('/api/admin/groups');
-
-            const tTeachers=allUsers.filter(u=> u.role==='teacher');
-            const tStudents=allUsers.filter(u=> u.role==='student');
-
-            document.querySelector('#teacher-table tbody').innerHTML=tTeachers.length ? tTeachers.map((u, i)=> ` <tr> <td>$ {
-                i + 1
-              }
-
-              </td> <td><strong>$ {
-                u.full_name
-              }
-
-              </strong></td> <td><code>$ {
-                u.username
-              }
-
-              </code></td> <td>$ {
-                u.department_name || '—'
-              }
-
-              </td> <td>$ {
-                formatDate(u.created_at)
-              }
-
-              </td> <td> <button class="btn btn-sm btn-info" onclick="editUser(${u.id})" >✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})" >🗑️</button> </td> </tr>`).join('') : '<tr><td colspan="6"><div class="empty-state"><div class="icon">👨‍🏫</div><h3>O\'qituvchi yo\'q</h3></div></td></tr>';
-
-            document.querySelector('#student-table tbody').innerHTML=tStudents.length ? tStudents.map((u, i)=> ` <tr> <td>$ {
-                i + 1
-              }
-
-              </td> <td><strong>$ {
-                u.full_name
-              }
-
-              </strong></td> <td><code>$ {
-                u.username
-              }
-
-              </code></td> <td>$ {
-                u.group_name || '—'
-              }
-
-              </td> <td>$ {
-                formatDate(u.created_at)
-              }
-
-              </td> <td> <button class="btn btn-sm btn-info" onclick="editUser(${u.id})" >✏️</button> <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})" >🗑️</button> </td> </tr>`).join('') : '<tr><td colspan="6"><div class="empty-state"><div class="icon">🎓</div><h3>Talaba yo\'q</h3></div></td></tr>';
-          }
-
-          function openAddUser(role) {
-            document.getElementById('user-edit-id').value='';
-            document.getElementById('user-role').value=role;
-            document.getElementById('user-fullname').value='';
-            document.getElementById('user-username').value='';
-            document.getElementById('user-password').value='';
-            document.getElementById('user-modal-title').textContent=role==='teacher' ? "O'qituvchi qo'shish": "Talaba qo'shish";
-            document.getElementById('pwd-hint').classList.add('hidden');
-
-            const groupRow=document.getElementById('user-group-row');
-            const deptRow=document.getElementById('user-dept-row');
-
-            if (role==='student') {
-              groupRow.classList.remove('hidden');
-              deptRow.classList.add('hidden');
-
-              document.getElementById('user-group').innerHTML='<option value="">— Guruh tanlang —</option>'+groups.map(g=> `<option value="${g.id}" >$ {
-                  g.name
-                }
-
-                </option>`).join('');
-            }
-
-            else {
-              groupRow.classList.add('hidden');
-              deptRow.classList.remove('hidden');
-
-              document.getElementById('user-dept').innerHTML='<option value="">— Kafedra tanlang —</option>'+departments.map(d=> `<option value="${d.id}" >$ {
-                  d.name
-                }
-
-                </option>`).join('');
-            }
-
-            origOpen('modal-user');
-          }
-
-          function editUser(id) {
-            const u=allUsers.find(x=> x.id===id);
-            if ( !u) return;
-            document.getElementById('user-edit-id').value=id;
-            document.getElementById('user-role').value=u.role;
-            document.getElementById('user-fullname').value=u.full_name;
-            document.getElementById('user-username').value=u.username;
-            document.getElementById('user-password').value='';
-            document.getElementById('user-modal-title').textContent=u.full_name+" ni tahrirlash";
-            document.getElementById('pwd-hint').classList.remove('hidden');
-
-            const groupRow=document.getElementById('user-group-row');
-            const deptRow=document.getElementById('user-dept-row');
-
-            if (u.role==='student') {
-              groupRow.classList.remove('hidden');
-              deptRow.classList.add('hidden');
-
-              document.getElementById('user-group').innerHTML='<option value="">— Guruh —</option>'+groups.map(g=> `<option value="${g.id}"$ {
-                  g.id==u.group_id ? 'selected' : ''
-                }
-
-                >$ {
-                  g.name
-                }
-
-                </option>`).join('');
-            }
-
-            else {
-              groupRow.classList.add('hidden');
-              deptRow.classList.remove('hidden');
-
-              document.getElementById('user-dept').innerHTML='<option value="">— Kafedra —</option>'+departments.map(d=> `<option value="${d.id}"$ {
-                  d.id==u.department_id ? 'selected' : ''
-                }
-
-                >$ {
-                  d.name
-                }
-
-                </option>`).join('');
-            }
-
-            origOpen('modal-user');
-          }
-
-          async function saveUser() {
-            const id=document.getElementById('user-edit-id').value;
-            const role=document.getElementById('user-role').value;
-            const full_name=document.getElementById('user-fullname').value.trim();
-            const username=document.getElementById('user-username').value.trim();
-            const password=document.getElementById('user-password').value;
-            const group_id=document.getElementById('user-group').value || null;
-            const department_id=document.getElementById('user-dept').value || null;
-
-            if ( !full_name || !username) return toast('F.I.Sh va login kerak', 'error');
-            if ( !id && !password) return toast('Parol kerak', 'error');
-
-            try {
-              if (id) {
-                await apiFetch(`/api/admin/users/$ {
-                    id
-                  }
-
-                  `, {
-                  method: 'PUT', body: JSON.stringify({
-                    full_name, password: password || undefined, group_id, department_id
-                  })
-              });
-          }
-
-          else {
-            await apiFetch('/api/admin/users', {
-              method: 'POST', body: JSON.stringify({
-                username, password, full_name, role, group_id, department_id
-              })
-          });
-          }
-
-          toast('Saqlandi!', 'success');
-          closeModal('modal-user');
-          loadUsers();
-          }
-
-          catch (e) {
-            toast(e.message, 'error');
-          }
-          }
-
-          async function deleteUser(id) {
-            if ( !confirm('Foydalanuvchini o\'chirishni tasdiqlaysizmi?')) return;
-
-            await apiFetch(`/api/admin/users/$ {
-                id
-              }
-
-              `, {
-              method: 'DELETE'
-            });
-          toast('O\'chirildi', 'success');
-          loadUsers();
-          }
-
-          // PROJECTS
-          async function loadProjects() {
-            [projects,
-            teachers]=await Promise.all([ apiFetch('/api/admin/projects'),
-              apiFetch('/api/admin/teachers')]);
-            if ( !groups.length) groups=await apiFetch('/api/admin/groups');
-
-            document.querySelector('#project-table tbody').innerHTML=projects.length ? projects.map((p, i)=> ` <tr> <td>$ {
-                i + 1
-              }
-
-              </td> <td><strong>$ {
-                p.title
-              }
-
-              </strong><br><small style="color:var(--gray)" >$ {
-                p.description || ''
-              }
-
-              </small></td> <td>$ {
-                p.teacher_name
-              }
-
-              </td> <td>$ {
-                p.group_name || '—'
-              }
-
-              </td> <td>$ {
-                statusBadge(p.status)
-              }
-
-              </td> <td>$ {
-                formatDate(p.deadline)
-              }
-
-              </td> <td><button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})" >🗑️</button></td> </tr>`).join('') : '<tr><td colspan="7"><div class="empty-state"><div class="icon">📋</div><h3>Loyiha yo\'q</h3></div></td></tr>';
-          }
-
-          async function saveProject() {
-            const title=document.getElementById('proj-title').value.trim();
-            const description=document.getElementById('proj-desc').value.trim();
-            const teacher_id=document.getElementById('proj-teacher').value;
-            const group_id=document.getElementById('proj-group').value || null;
-            const deadline=document.getElementById('proj-deadline').value || null;
-            if ( !title || !teacher_id) return toast('Sarlavha va o\'qituvchi kerak', 'error');
-
-            try {
-              await apiFetch('/api/admin/projects', {
-                method: 'POST', body: JSON.stringify({
-                  title, description, teacher_id, group_id, deadline
-                })
-            });
-          toast('Loyiha qo\'shildi!', 'success');
-          closeModal('modal-project');
-          loadProjects();
-          }
-
-          catch (e) {
-            toast(e.message, 'error');
-          }
-          }
-
-          window.openModal=function (id) {
-            if (id==='modal-project') {
-              document.getElementById('proj-title').value='';
-              document.getElementById('proj-desc').value='';
-              document.getElementById('proj-deadline').value='';
-
-              document.getElementById('proj-teacher').innerHTML='<option value="">— O\'qituvchi tanlang —</option>'+teachers.map(t=> `<option value="${t.id}" >$ {
-                  t.full_name
-                }
-
-                </option>`).join('');
-
-              document.getElementById('proj-group').innerHTML='<option value="">— Guruh tanlang (ixtiyoriy) —</option>'+groups.map(g=> `<option value="${g.id}" >$ {
-                  g.name
-                }
-
-                </option>`).join('');
-            }
-
-            if (id==='modal-department') {
-              const sel=document.getElementById('dept-faculty');
-
-              sel.innerHTML='<option value="">— Tanlang —</option>'+faculties.map(f=> `<option value="${f.id}" >$ {
-                  f.name
-                }
-
-                </option>`).join('');
-              document.getElementById('dept-edit-id').value='';
-              document.getElementById('dept-name').value='';
-            }
-
-            if (id==='modal-group') {
-              const sel=document.getElementById('group-dept');
-
-              sel.innerHTML='<option value="">— Tanlang —</option>'+departments.map(d=> `<option value="${d.id}" >$ {
-                  d.name
-                }
-
-                </option>`).join('');
-              document.getElementById('group-edit-id').value='';
-              document.getElementById('group-name').value='';
-            }
-
-            if (id==='modal-faculty') {
-              document.getElementById('faculty-edit-id').value='';
-              document.getElementById('faculty-name').value='';
-              document.getElementById('faculty-modal-title').textContent='Fakultet qo\'shish';
-            }
-
-            document.getElementById(id)?.classList.add('open');
-          }
-
-          ;
-
-          async function deleteProject(id) {
-            if ( !confirm('Loyihani o\'chirishni tasdiqlaysizmi?')) return;
-
-            await apiFetch(`/api/admin/projects/$ {
-                id
-              }
-
-              `, {
-              method: 'DELETE'
-            });
-          toast('O\'chirildi', 'success');
-          loadProjects();
-          }
-
-          initNav();
-          loadDashboard();
-          </script></body></html>
+        <div style="font-size:1.6rem; font-weight:900; color:white; letter-spacing:1px; margin-bottom:0.4rem;">PBL<span
+            style="color:var(--accent)">.</span></div>
+        <div class="sidebar-user" id="sidebar-username" style="font-size:0.9rem;opacity:0.9">Administrator</div>
+        <span class="sidebar-role" style="background:#20b2aa; margin-top:0.3rem">Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" data-page="dashboard" class="active"><span class="nav-icon"><svg width="18" height="18"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg></span> Dashboard</a>
+        <a href="#" data-page="structure"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 10v11M12 10v11M16 10v11" />
+            </svg></span> Tuzilma boshqaruvi</a>
+        <a href="#" data-page="users"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+            </svg></span> Foydalanuvchilar</a>
+        <a href="#" data-page="projects"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M3 7h18M3 12h18M3 17h18" />
+            </svg></span> PBL Loyihalar</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-sm btn-danger" style="width:100%" onclick="logout()"><svg width="15" height="15"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+          </svg> Chiqish</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="panel-main">
+      <div class="panel-topbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button id="sidebar-toggle"
+            style="background:none;border:none;font-size:1.4rem;cursor:pointer;display:none;">☰</button>
+          <h2 id="page-title">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          <span id="topbar-user" style="font-size:0.85rem; color:var(--gray)"></span>
+        </div>
+      </div>
+
+      <div class="panel-content">
+
+        <!-- DASHBOARD PAGE -->
+        <div id="page-dashboard" class="fade-in">
+          <div class="stats-row" id="stats-row"></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;" class="dashboard-charts">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📈 Loyihalar holati</div>
+              </div>
+              <canvas id="chart-projects" height="200"></canvas>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📋 Vazifalar holati</div>
+              </div>
+              <canvas id="chart-tasks" height="200"></canvas>
+            </div>
+          </div>
+          <div class="card" style="margin-top:1.5rem;">
+            <div class="card-header">
+              <div class="card-title">🗓️ Tizim haqida ma'lumot</div>
+            </div>
+            <div class="stats-row" id="structure-stats"></div>
+          </div>
+        </div>
+
+        <!-- STRUCTURE PAGE -->
+        <div id="page-structure" class="hidden fade-in">
+          <div class="tabs">
+            <div class="tab active" data-tab="faculties">Fakultetlar</div>
+            <div class="tab" data-tab="departments">Kafedralar</div>
+            <div class="tab" data-tab="groups">Guruhlar</div>
+          </div>
+
+          <!-- Faculties tab -->
+          <div id="tab-faculties">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Fakultetlar ro'yxati</div>
+                <button class="btn btn-primary btn-sm" onclick="openModal('modal-faculty')">+ Qo'shish</button>
+              </div>
+              <div class="table-wrap">
+                <table id="faculty-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Nomi</th>
+                      <th>Yaratilgan</th>
+                      <th>Amallar</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Departments tab -->
+          <div id="tab-departments" class="hidden">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Kafedralar ro'yxati</div>
+                <button class="btn btn-primary btn-sm" onclick="openModal('modal-department')">+ Qo'shish</button>
+              </div>
+              <div class="table-wrap">
+                <table id="dept-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Nomi</th>
+                      <th>Fakultet</th>
+                      <th>Yaratilgan</th>
+                      <th>Amallar</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Groups tab -->
+          <div id="tab-groups" class="hidden">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Guruhlar ro'yxati</div>
+                <button class="btn btn-primary btn-sm" onclick="openModal('modal-group')">+ Qo'shish</button>
+              </div>
+              <div class="table-wrap">
+                <table id="group-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Nomi</th>
+                      <th>Kafedra</th>
+                      <th>Fakultet</th>
+                      <th>Yaratilgan</th>
+                      <th>Amallar</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- USERS PAGE -->
+        <div id="page-users" class="hidden fade-in">
+          <div class="tabs">
+            <div class="tab active" data-tab="teachers-tab">O'qituvchilar</div>
+            <div class="tab" data-tab="students-tab">Talabalar</div>
+          </div>
+          <div id="tab-teachers-tab">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">O'qituvchilar</div>
+                <button class="btn btn-primary btn-sm" onclick="openAddUser('teacher')">+ O'qituvchi qo'shish</button>
+              </div>
+              <div class="table-wrap">
+                <table id="teacher-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>F.I.Sh</th>
+                      <th>Login</th>
+                      <th>Kafedra</th>
+                      <th>Qo'shildi</th>
+                      <th>Amallar</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div id="tab-students-tab" class="hidden">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Talabalar</div>
+                <button class="btn btn-primary btn-sm" onclick="openAddUser('student')">+ Talaba qo'shish</button>
+              </div>
+              <div class="table-wrap">
+                <table id="student-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>F.I.Sh</th>
+                      <th>Login</th>
+                      <th>Guruh</th>
+                      <th>Qo'shildi</th>
+                      <th>Amallar</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJECTS PAGE -->
+        <div id="page-projects" class="hidden fade-in">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">PBL Loyihalar</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modal-project')">+ Loyiha qo'shish</button>
+            </div>
+            <div class="table-wrap">
+              <table id="project-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Sarlavha</th>
+                    <th>O'qituvchi</th>
+                    <th>Guruh</th>
+                    <th>Holat</th>
+                    <th>Muddat</th>
+                    <th>Amallar</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Faculty Modal -->
+  <div class="modal-overlay" id="modal-faculty">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="faculty-modal-title">Fakultet qo'shish</div>
+        <button class="modal-close" onclick="closeModal('modal-faculty')">✕</button>
+      </div>
+      <input type="hidden" id="faculty-edit-id">
+      <div class="form-group">
+        <label>Fakultet nomi</label>
+        <input type="text" class="form-control" id="faculty-name" placeholder="Masalan: Kompyuter fanlari">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-faculty')">Bekor</button>
+        <button class="btn btn-primary btn-sm" onclick="saveFaculty()">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Department Modal -->
+  <div class="modal-overlay" id="modal-department">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="dept-modal-title">Kafedra qo'shish</div>
+        <button class="modal-close" onclick="closeModal('modal-department')">✕</button>
+      </div>
+      <input type="hidden" id="dept-edit-id">
+      <div class="form-group">
+        <label>Kafedra nomi</label>
+        <input type="text" class="form-control" id="dept-name">
+      </div>
+      <div class="form-group">
+        <label>Fakultet</label>
+        <select class="form-control" id="dept-faculty"></select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-department')">Bekor</button>
+        <button class="btn btn-primary btn-sm" onclick="saveDept()">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group Modal -->
+  <div class="modal-overlay" id="modal-group">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="group-modal-title">Guruh qo'shish</div>
+        <button class="modal-close" onclick="closeModal('modal-group')">✕</button>
+      </div>
+      <input type="hidden" id="group-edit-id">
+      <div class="form-group">
+        <label>Guruh nomi</label>
+        <input type="text" class="form-control" id="group-name">
+      </div>
+      <div class="form-group">
+        <label>Kafedra</label>
+        <select class="form-control" id="group-dept"></select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-group')">Bekor</button>
+        <button class="btn btn-primary btn-sm" onclick="saveGroup()">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div class="modal-overlay" id="modal-user">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="user-modal-title">Foydalanuvchi qo'shish</div>
+        <button class="modal-close" onclick="closeModal('modal-user')">✕</button>
+      </div>
+      <input type="hidden" id="user-edit-id">
+      <input type="hidden" id="user-role">
+      <div class="form-group">
+        <label>To'liq ism</label>
+        <input type="text" class="form-control" id="user-fullname">
+      </div>
+      <div class="form-group">
+        <label>Login</label>
+        <input type="text" class="form-control" id="user-username">
+      </div>
+      <div class="form-group">
+        <label>Parol <span id="pwd-hint" style="font-size:0.75rem; color:var(--gray)">(tahrirlashda bo'sh qoldirsa
+            o'zgarmaydi)</span></label>
+        <input type="password" class="form-control" id="user-password">
+      </div>
+      <div class="form-group" id="user-group-row">
+        <label>Guruh</label>
+        <select class="form-control" id="user-group"></select>
+      </div>
+      <div class="form-group" id="user-dept-row">
+        <label>Kafedra</label>
+        <select class="form-control" id="user-dept"></select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-user')">Bekor</button>
+        <button class="btn btn-primary btn-sm" onclick="saveUser()">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Modal -->
+  <div class="modal-overlay" id="modal-project">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Loyiha qo'shish</div>
+        <button class="modal-close" onclick="closeModal('modal-project')">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Loyiha sarlavhasi</label>
+        <input type="text" class="form-control" id="proj-title">
+      </div>
+      <div class="form-group">
+        <label>Tavsif</label>
+        <textarea class="form-control" id="proj-desc" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>O'qituvchi</label>
+        <select class="form-control" id="proj-teacher"></select>
+      </div>
+      <div class="form-group">
+        <label>Guruh</label>
+        <select class="form-control" id="proj-group">
+          <option value="">— Tanlang —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Muddat</label>
+        <input type="date" class="form-control" id="proj-deadline">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-project')">Bekor</button>
+        <button class="btn btn-primary btn-sm" onclick="saveProject()">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script>
+    const user = requireAuth('admin');
+    if (user) document.getElementById('sidebar-username').textContent = user.full_name;
+    document.getElementById('topbar-user').textContent = user?.full_name || '';
+
+    let faculties = [], departments = [], groups = [], allUsers = [], teachers = [], projects = [];
+
+    // PAGE NAVIGATION
+    document.querySelectorAll('.sidebar-nav a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        switchPage(a.dataset.page);
+        document.querySelectorAll('.sidebar-nav a').forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+      });
+    });
+
+    function switchPage(page) {
+      document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('page-' + page)?.classList.remove('hidden');
+      document.getElementById('page-title').textContent = {
+        dashboard: 'Dashboard', structure: 'Tuzilma boshqaruvi',
+        users: 'Foydalanuvchilar', projects: 'PBL Loyihalar'
+      }[page] || page;
+      if (page === 'dashboard') loadDashboard();
+      if (page === 'structure') loadStructure();
+      if (page === 'users') loadUsers();
+      if (page === 'projects') loadProjects();
+    }
+
+    // TAB NAVIGATION
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const parent = tab.closest('[id^="page-"]') || tab.parentElement;
+        parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const allTabs = parent.querySelectorAll('[id^="tab-"]');
+        allTabs.forEach(t => t.classList.add('hidden'));
+        const target = parent.querySelector('#tab-' + tab.dataset.tab);
+        if (target) target.classList.remove('hidden');
+      });
+    });
+
+    // DASHBOARD
+    let chartProjects, chartTasks;
+    async function loadDashboard() {
+      const stats = await apiFetch('/api/admin/stats');
+      document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-info"><h3>${stats.teachers}</h3><p>O'qituvchilar</p></div></div>
+    <div class="stat-card accent"><div class="stat-icon">🎓</div><div class="stat-info"><h3>${stats.students}</h3><p>Talabalar</p></div></div>
+    <div class="stat-card success"><div class="stat-icon">📋</div><div class="stat-info"><h3>${stats.projects}</h3><p>Loyihalar</p></div></div>
+    <div class="stat-card info"><div class="stat-icon">✅</div><div class="stat-info"><h3>${stats.tasks_graded}</h3><p>Baholangan</p></div></div>
+    <div class="stat-card danger"><div class="stat-icon">⏳</div><div class="stat-info"><h3>${stats.tasks_submitted}</h3><p>Kutilmoqda</p></div></div>
+  `;
+      document.getElementById('structure-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">🏛️</div><div class="stat-info"><h3>${stats.faculties}</h3><p>Fakultetlar</p></div></div>
+    <div class="stat-card accent"><div class="stat-icon">🏢</div><div class="stat-info"><h3>${stats.departments}</h3><p>Kafedralar</p></div></div>
+    <div class="stat-card success"><div class="stat-icon">👨‍👩‍👧‍👦</div><div class="stat-info"><h3>${stats.groups}</h3><p>Guruhlar</p></div></div>
+  `;
+
+      if (chartProjects) chartProjects.destroy();
+      if (chartTasks) chartTasks.destroy();
+
+      chartProjects = new Chart(document.getElementById('chart-projects'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Faol', 'Yakunlangan', 'Arxiv'],
+          datasets: [{ data: [stats.projects, 0, 0], backgroundColor: ['#5b4fcf', '#27ae60', '#6c757d'], borderWidth: 0 }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+      });
+
+      chartTasks = new Chart(document.getElementById('chart-tasks'), {
+        type: 'bar',
+        data: {
+          labels: ['Kutilmoqda', 'Topshirildi', 'Baholandi'],
+          datasets: [{ data: [stats.tasks_pending, stats.tasks_submitted, stats.tasks_graded], backgroundColor: ['#f39c12', '#2980b9', '#27ae60'], borderRadius: 6 }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+      });
+    }
+
+    // STRUCTURE
+    async function loadStructure() {
+      [faculties, departments, groups] = await Promise.all([
+        apiFetch('/api/admin/faculties'),
+        apiFetch('/api/admin/departments'),
+        apiFetch('/api/admin/groups')
+      ]);
+      renderFaculties(); renderDepts(); renderGroups();
+    }
+
+    function renderFaculties() {
+      const tbody = document.querySelector('#faculty-table tbody');
+      tbody.innerHTML = faculties.length ? faculties.map((f, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><strong>${f.name}</strong></td>
+      <td>${formatDate(f.created_at)}</td>
+      <td>
+        <button class="btn btn-sm btn-info" onclick="editFaculty(${f.id},'${f.name.replace(/'/g, "\\'")}')">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteFaculty(${f.id})">🗑️</button>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="4" class="empty-state"><div>Hozircha ma\'lumot yo\'q</div></td></tr>';
+    }
+
+    function renderDepts() {
+      const tbody = document.querySelector('#dept-table tbody');
+      tbody.innerHTML = departments.length ? departments.map((d, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><strong>${d.name}</strong></td>
+      <td><span class="badge badge-primary">${d.faculty_name}</span></td>
+      <td>${formatDate(d.created_at)}</td>
+      <td>
+        <button class="btn btn-sm btn-info" onclick="editDept(${d.id},'${d.name.replace(/'/g, "\\'")}',${d.faculty_id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDept(${d.id})">🗑️</button>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="5"><div class="empty-state"><div class="icon">🏢</div><h3>Kafedra yo\'q</h3></div></td></tr>';
+    }
+
+    function renderGroups() {
+      const tbody = document.querySelector('#group-table tbody');
+      tbody.innerHTML = groups.length ? groups.map((g, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><strong>${g.name}</strong></td>
+      <td>${g.department_name}</td>
+      <td><span class="badge badge-info">${g.faculty_name}</span></td>
+      <td>${formatDate(g.created_at)}</td>
+      <td>
+        <button class="btn btn-sm btn-info" onclick="editGroup(${g.id},'${g.name.replace(/'/g, "\\'")}',${g.department_id})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGroup(${g.id})">🗑️</button>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="6"><div class="empty-state"><p>Guruh yo\'q</p></div></td></tr>';
+    }
+
+    async function saveFaculty() {
+      const name = document.getElementById('faculty-name').value.trim();
+      const id = document.getElementById('faculty-edit-id').value;
+      if (!name) return toast('Nomi kerak', 'error');
+      try {
+        if (id) { await apiFetch(`/api/admin/faculties/${id}`, { method: 'PUT', body: JSON.stringify({ name }) }); }
+        else { await apiFetch('/api/admin/faculties', { method: 'POST', body: JSON.stringify({ name }) }); }
+        toast('Saqlandi', 'success');
+        closeModal('modal-faculty');
+        loadStructure();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+    function editFaculty(id, name) {
+      document.getElementById('faculty-edit-id').value = id;
+      document.getElementById('faculty-name').value = name;
+      document.getElementById('faculty-modal-title').textContent = 'Fakultetni tahrirlash';
+      openModal('modal-faculty');
+    }
+    async function deleteFaculty(id) {
+      if (!confirm('O\'chirishni tasdiqlaysizmi?')) return;
+      await apiFetch(`/api/admin/faculties/${id}`, { method: 'DELETE' });
+      toast('O\'chirildi', 'success'); loadStructure();
+    }
+
+    async function saveDept() {
+      const name = document.getElementById('dept-name').value.trim();
+      const faculty_id = document.getElementById('dept-faculty').value;
+      const id = document.getElementById('dept-edit-id').value;
+      if (!name || !faculty_id) return toast('Barcha maydonlar kerak', 'error');
+      try {
+        if (id) await apiFetch(`/api/admin/departments/${id}`, { method: 'PUT', body: JSON.stringify({ name, faculty_id }) });
+        else await apiFetch('/api/admin/departments', { method: 'POST', body: JSON.stringify({ name, faculty_id }) });
+        toast('Saqlandi', 'success'); closeModal('modal-department'); loadStructure();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+    function editDept(id, name, fid) {
+      document.getElementById('dept-edit-id').value = id;
+      document.getElementById('dept-name').value = name;
+      document.getElementById('dept-faculty').value = fid;
+      document.getElementById('dept-modal-title').textContent = 'Kafedrni tahrirlash';
+      openModal('modal-department');
+    }
+    async function deleteDept(id) {
+      if (!confirm('O\'chirishni tasdiqlaysizmi?')) return;
+      await apiFetch(`/api/admin/departments/${id}`, { method: 'DELETE' });
+      toast('O\'chirildi', 'success'); loadStructure();
+    }
+
+    async function saveGroup() {
+      const name = document.getElementById('group-name').value.trim();
+      const department_id = document.getElementById('group-dept').value;
+      const id = document.getElementById('group-edit-id').value;
+      if (!name || !department_id) return toast('Barcha maydonlar kerak', 'error');
+      try {
+        if (id) await apiFetch(`/api/admin/groups/${id}`, { method: 'PUT', body: JSON.stringify({ name, department_id }) });
+        else await apiFetch('/api/admin/groups', { method: 'POST', body: JSON.stringify({ name, department_id }) });
+        toast('Saqlandi', 'success'); closeModal('modal-group'); loadStructure();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+    function editGroup(id, name, did) {
+      document.getElementById('group-edit-id').value = id;
+      document.getElementById('group-name').value = name;
+      document.getElementById('group-dept').value = did;
+      document.getElementById('group-modal-title').textContent = 'Guruhni tahrirlash';
+      openModal('modal-group');
+    }
+    async function deleteGroup(id) {
+      if (!confirm('O\'chirishni tasdiqlaysizmi?')) return;
+      await apiFetch(`/api/admin/groups/${id}`, { method: 'DELETE' });
+      toast('O\'chirildi', 'success'); loadStructure();
+    }
+
+    // Populate selects when opening modals
+    document.getElementById('modal-department').querySelector('.modal-close').addEventListener('click', () => closeModal('modal-department'));
+    document.querySelector('[onclick="openModal(\'modal-department\')"]')?.addEventListener('click', () => {
+      document.getElementById('dept-edit-id').value = '';
+      document.getElementById('dept-name').value = '';
+      document.getElementById('dept-modal-title').textContent = 'Kafedra qo\'shish';
+      const sel = document.getElementById('dept-faculty');
+      sel.innerHTML = faculties.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+    });
+
+    // Override openModal for dept and group to populate selects
+    const origOpen = openModal;
+    window.openModal = function (id) {
+      if (id === 'modal-department') {
+        const sel = document.getElementById('dept-faculty');
+        sel.innerHTML = '<option value="">— Tanlang —</option>' + faculties.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+      }
+      if (id === 'modal-group') {
+        const sel = document.getElementById('group-dept');
+        sel.innerHTML = '<option value="">— Tanlang —</option>' + departments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+      }
+      if (id === 'modal-faculty') {
+        document.getElementById('faculty-edit-id').value = '';
+        document.getElementById('faculty-name').value = '';
+        document.getElementById('faculty-modal-title').textContent = 'Fakultet qo\'shish';
+      }
+      if (id === 'modal-group') {
+        document.getElementById('group-edit-id').value = '';
+        document.getElementById('group-name').value = '';
+        document.getElementById('group-modal-title').textContent = 'Guruh qo\'shish';
+      }
+      origOpen(id);
+    };
+
+    // USERS
+    async function loadUsers() {
+      allUsers = await apiFetch('/api/admin/users');
+      if (!departments.length) departments = await apiFetch('/api/admin/departments');
+      if (!groups.length) groups = await apiFetch('/api/admin/groups');
+
+      const tTeachers = allUsers.filter(u => u.role === 'teacher');
+      const tStudents = allUsers.filter(u => u.role === 'student');
+
+      document.querySelector('#teacher-table tbody').innerHTML = tTeachers.length ?
+        tTeachers.map((u, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td><strong>${u.full_name}</strong></td>
+        <td><code>${u.username}</code></td>
+        <td>${u.department_name || '—'}</td>
+        <td>${formatDate(u.created_at)}</td>
+        <td>
+          <button class="btn btn-sm btn-info" onclick="editUser(${u.id})">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">🗑️</button>
+        </td>
+      </tr>`).join('') :
+        '<tr><td colspan="6"><div class="empty-state"><div class="icon">👨‍🏫</div><h3>O\'qituvchi yo\'q</h3></div></td></tr>';
+
+      document.querySelector('#student-table tbody').innerHTML = tStudents.length ?
+        tStudents.map((u, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td><strong>${u.full_name}</strong></td>
+        <td><code>${u.username}</code></td>
+        <td>${u.group_name || '—'}</td>
+        <td>${formatDate(u.created_at)}</td>
+        <td>
+          <button class="btn btn-sm btn-info" onclick="editUser(${u.id})">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">🗑️</button>
+        </td>
+      </tr>`).join('') :
+        '<tr><td colspan="6"><div class="empty-state"><div class="icon">🎓</div><h3>Talaba yo\'q</h3></div></td></tr>';
+    }
+
+    function openAddUser(role) {
+      document.getElementById('user-edit-id').value = '';
+      document.getElementById('user-role').value = role;
+      document.getElementById('user-fullname').value = '';
+      document.getElementById('user-username').value = '';
+      document.getElementById('user-password').value = '';
+      document.getElementById('user-modal-title').textContent = role === 'teacher' ? "O'qituvchi qo'shish" : "Talaba qo'shish";
+      document.getElementById('pwd-hint').classList.add('hidden');
+
+      const groupRow = document.getElementById('user-group-row');
+      const deptRow = document.getElementById('user-dept-row');
+      if (role === 'student') {
+        groupRow.classList.remove('hidden');
+        deptRow.classList.add('hidden');
+        document.getElementById('user-group').innerHTML = '<option value="">— Guruh tanlang —</option>' + groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+      } else {
+        groupRow.classList.add('hidden');
+        deptRow.classList.remove('hidden');
+        document.getElementById('user-dept').innerHTML = '<option value="">— Kafedra tanlang —</option>' + departments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+      }
+      origOpen('modal-user');
+    }
+
+    function editUser(id) {
+      const u = allUsers.find(x => x.id === id);
+      if (!u) return;
+      document.getElementById('user-edit-id').value = id;
+      document.getElementById('user-role').value = u.role;
+      document.getElementById('user-fullname').value = u.full_name;
+      document.getElementById('user-username').value = u.username;
+      document.getElementById('user-password').value = '';
+      document.getElementById('user-modal-title').textContent = u.full_name + " ni tahrirlash";
+      document.getElementById('pwd-hint').classList.remove('hidden');
+
+      const groupRow = document.getElementById('user-group-row');
+      const deptRow = document.getElementById('user-dept-row');
+      if (u.role === 'student') {
+        groupRow.classList.remove('hidden'); deptRow.classList.add('hidden');
+        document.getElementById('user-group').innerHTML = '<option value="">— Guruh —</option>' + groups.map(g => `<option value="${g.id}" ${g.id == u.group_id ? 'selected' : ''}>${g.name}</option>`).join('');
+      } else {
+        groupRow.classList.add('hidden'); deptRow.classList.remove('hidden');
+        document.getElementById('user-dept').innerHTML = '<option value="">— Kafedra —</option>' + departments.map(d => `<option value="${d.id}" ${d.id == u.department_id ? 'selected' : ''}>${d.name}</option>`).join('');
+      }
+      origOpen('modal-user');
+    }
+
+    async function saveUser() {
+      const id = document.getElementById('user-edit-id').value;
+      const role = document.getElementById('user-role').value;
+      const full_name = document.getElementById('user-fullname').value.trim();
+      const username = document.getElementById('user-username').value.trim();
+      const password = document.getElementById('user-password').value;
+      const group_id = document.getElementById('user-group').value || null;
+      const department_id = document.getElementById('user-dept').value || null;
+
+      if (!full_name || !username) return toast('F.I.Sh va login kerak', 'error');
+      if (!id && !password) return toast('Parol kerak', 'error');
+      try {
+        if (id) {
+          await apiFetch(`/api/admin/users/${id}`, { method: 'PUT', body: JSON.stringify({ full_name, password: password || undefined, group_id, department_id }) });
+        } else {
+          await apiFetch('/api/admin/users', { method: 'POST', body: JSON.stringify({ username, password, full_name, role, group_id, department_id }) });
+        }
+        toast('Saqlandi!', 'success');
+        closeModal('modal-user');
+        loadUsers();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm('Foydalanuvchini o\'chirishni tasdiqlaysizmi?')) return;
+      await apiFetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+      toast('O\'chirildi', 'success'); loadUsers();
+    }
+
+    // PROJECTS
+    async function loadProjects() {
+      [projects, teachers] = await Promise.all([
+        apiFetch('/api/admin/projects'),
+        apiFetch('/api/admin/teachers')
+      ]);
+      if (!groups.length) groups = await apiFetch('/api/admin/groups');
+
+      document.querySelector('#project-table tbody').innerHTML = projects.length ?
+        projects.map((p, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td><strong>${p.title}</strong><br><small style="color:var(--gray)">${p.description || ''}</small></td>
+        <td>${p.teacher_name}</td>
+        <td>${p.group_name || '—'}</td>
+        <td>${statusBadge(p.status)}</td>
+        <td>${formatDate(p.deadline)}</td>
+        <td><button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">🗑️</button></td>
+      </tr>`).join('') :
+        '<tr><td colspan="7"><div class="empty-state"><div class="icon">📋</div><h3>Loyiha yo\'q</h3></div></td></tr>';
+    }
+
+    async function saveProject() {
+      const title = document.getElementById('proj-title').value.trim();
+      const description = document.getElementById('proj-desc').value.trim();
+      const teacher_id = document.getElementById('proj-teacher').value;
+      const group_id = document.getElementById('proj-group').value || null;
+      const deadline = document.getElementById('proj-deadline').value || null;
+      if (!title || !teacher_id) return toast('Sarlavha va o\'qituvchi kerak', 'error');
+      try {
+        await apiFetch('/api/admin/projects', { method: 'POST', body: JSON.stringify({ title, description, teacher_id, group_id, deadline }) });
+        toast('Loyiha qo\'shildi!', 'success');
+        closeModal('modal-project');
+        loadProjects();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    window.openModal = function (id) {
+      if (id === 'modal-project') {
+        document.getElementById('proj-title').value = '';
+        document.getElementById('proj-desc').value = '';
+        document.getElementById('proj-deadline').value = '';
+        document.getElementById('proj-teacher').innerHTML = '<option value="">— O\'qituvchi tanlang —</option>' + teachers.map(t => `<option value="${t.id}">${t.full_name}</option>`).join('');
+        document.getElementById('proj-group').innerHTML = '<option value="">— Guruh tanlang (ixtiyoriy) —</option>' + groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+      }
+      if (id === 'modal-department') {
+        const sel = document.getElementById('dept-faculty');
+        sel.innerHTML = '<option value="">— Tanlang —</option>' + faculties.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+        document.getElementById('dept-edit-id').value = '';
+        document.getElementById('dept-name').value = '';
+      }
+      if (id === 'modal-group') {
+        const sel = document.getElementById('group-dept');
+        sel.innerHTML = '<option value="">— Tanlang —</option>' + departments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        document.getElementById('group-edit-id').value = '';
+        document.getElementById('group-name').value = '';
+      }
+      if (id === 'modal-faculty') {
+        document.getElementById('faculty-edit-id').value = '';
+        document.getElementById('faculty-name').value = '';
+        document.getElementById('faculty-modal-title').textContent = 'Fakultet qo\'shish';
+      }
+      document.getElementById(id)?.classList.add('open');
+    };
+
+    async function deleteProject(id) {
+      if (!confirm('Loyihani o\'chirishni tasdiqlaysizmi?')) return;
+      await apiFetch(`/api/admin/projects/${id}`, { method: 'DELETE' });
+      toast('O\'chirildi', 'success'); loadProjects();
+    }
+
+    initNav();
+    loadDashboard();
+  </script>
+</body>
+
+</html>
