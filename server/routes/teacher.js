@@ -14,32 +14,21 @@ async function groqChat(messages) {
     max_tokens: 2048
   });
 
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'api.groq.com',
-      path: '/openai/v1/chat/completions',
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(body)
-      }
-    };
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const json = JSON.parse(data);
-          if (json.error) return reject(new Error(json.error.message || 'Groq xato'));
-          resolve(json.choices[0].message.content);
-        } catch (e) { reject(e); }
-      });
-    });
-    req.on('error', reject);
-    req.write(body);
-    req.end();
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${GROQ_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body
   });
+
+  const json = await res.json();
+  if (!res.ok || json.error) {
+    throw new Error((json.error && json.error.message) || 'Groq server xatosi');
+  }
+
+  return json.choices[0].message.content;
 }
 
 module.exports = function (db) {
