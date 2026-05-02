@@ -51,7 +51,7 @@ module.exports = function (db) {
       }
       // Failsafe validation
       else {
-        return res.status(400).json({ error: "Fayl biriktirilmadi. Iltimos fayl tanlab qaytadan yuboring." });
+        return res.status(400).json({ error: "FAYL YUBORILMADI (Yoki kesh xatosi). Iltimos platformaga boshqa brauzer orqali kiring (eski xotira saqlanib qolgan)." });
       }
 
       await db.run(
