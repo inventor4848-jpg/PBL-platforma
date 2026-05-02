@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,15 +17,58 @@
       transition: transform 0.2s;
       cursor: pointer;
     }
-    .project-card:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(91,79,207,0.15); }
-    .project-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .project-card .meta { font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem; }
-    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
-    .task-row-submitted { background: #fef9e7; }
-    .award-badge { display: inline-flex; align-items:center; gap:0.3rem; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
-    .award-gold { background: #fff3cd; color: #856404; }
-    .award-silver { background: #f8f9fa; color: #6c757d; }
-    .award-bronze { background: #fdebd0; color: #783f00; }
+
+    .project-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(91, 79, 207, 0.15);
+    }
+
+    .project-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-card .meta {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .task-row-submitted {
+      background: #fef9e7;
+    }
+
+    .award-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .award-gold {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .award-silver {
+      background: #f8f9fa;
+      color: #6c757d;
+    }
+
+    .award-bronze {
+      background: #fdebd0;
+      color: #783f00;
+    }
 
     /* AI Assign styles */
     .ai-assignment-card {
@@ -37,307 +81,358 @@
       align-items: flex-start;
       gap: 1rem;
     }
+
     .ai-assignment-card .student-name {
       font-weight: 700;
       font-size: 0.95rem;
       color: var(--primary);
       min-width: 160px;
     }
-    .ai-assignment-card .task-info { flex: 1; }
-    .ai-assignment-card .task-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
-    .ai-assignment-card .task-desc { font-size: 0.875rem; color: var(--gray); }
-    .ai-loading {
-      display: flex; flex-direction: column; align-items: center;
-      padding: 3rem; gap: 1rem;
+
+    .ai-assignment-card .task-info {
+      flex: 1;
     }
+
+    .ai-assignment-card .task-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .ai-assignment-card .task-desc {
+      font-size: 0.875rem;
+      color: var(--gray);
+    }
+
+    .ai-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem;
+      gap: 1rem;
+    }
+
     .ai-spinner {
-      width: 52px; height: 52px;
+      width: 52px;
+      height: 52px;
       border: 5px solid var(--primary-light);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.9s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     .ai-step-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: 50%;
-      background: var(--primary); color: white;
-      font-size: 0.8rem; font-weight: 800; flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 800;
+      flex-shrink: 0;
       margin-top: 2px;
     }
-
-    /* Sidebar SVG Logo */
-    .sidebar-logo-wrap {
-      display: flex; align-items: center; gap: 0.7rem;
-    }
-    .sidebar-logo-icon {
-      width: 40px; height: 40px; flex-shrink: 0;
-    }
-    .sidebar-logo-text {
-      font-size: 1.3rem; font-weight: 900; color: white; line-height: 1.1;
-    }
-    .sidebar-logo-text span { color: var(--accent); display: block; font-size: 0.75rem; font-weight: 600; opacity: 0.9; letter-spacing: 1px; }
   </style>
 </head>
+
 <body>
-<div class="panel-wrapper">
+  <div class="panel-wrapper">
 
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo-wrap">
-        <svg class="sidebar-logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="24,3 44,14 44,34 24,45 4,34 4,14" fill="#5b4fcf" opacity="0.9"/>
-          <polygon points="24,8 40,17 40,31 24,40 8,31 8,17" fill="#3d35a8"/>
-          <text x="24" y="29" text-anchor="middle" fill="white" font-size="13" font-weight="900" font-family="Segoe UI,sans-serif">PBL</text>
-        </svg>
-        <div class="sidebar-logo-text">PBL Platforma<span>O'QITUVCHI</span></div>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div style="font-size:1.6rem; font-weight:900; color:white; letter-spacing:1px; margin-bottom:0.4rem;">PBL<span
+            style="color:var(--accent)">.</span></div>
+        <div class="sidebar-user" id="sidebar-username" style="font-size:0.9rem;opacity:0.9"></div>
+        <span class="sidebar-role" style="background:#20b2aa; margin-top:0.3rem">O'qituvchi</span>
       </div>
-      <div class="sidebar-user" id="sidebar-username" style="margin-top:0.7rem;font-size:0.85rem;opacity:0.8"></div>
-      <span class="sidebar-role" style="background:var(--accent)">O'qituvchi</span>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="#" data-page="dashboard" class="active"><span class="nav-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      </span> Dashboard</a>
-      <a href="#" data-page="projects"><span class="nav-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
-      </span> Mening loyihalarim</a>
-      <a href="#" data-page="ai-assign"><span class="nav-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-      </span> AI Vazifa</a>
-      <a href="#" data-page="chat"><span class="nav-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      </span> Chat</a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn btn-sm btn-danger" style="width:100%" onclick="logout()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-        Chiqish
-      </button>
-    </div>
-  </aside>
+      <nav class="sidebar-nav">
+        <a href="#" data-page="dashboard" class="active"><span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+          </span> Dashboard</a>
+        <a href="#" data-page="projects"><span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M3 7h18M3 12h18M3 17h18" />
+            </svg>
+          </span> Mening loyihalarim</a>
 
-  <main class="panel-main">
-    <div class="panel-topbar">
-      <h2 id="page-title">Dashboard</h2>
-      <div class="topbar-actions"><span id="topbar-user" style="font-size:0.9rem;color:var(--gray)"></span></div>
-    </div>
-    <div class="panel-content">
-
-      <!-- DASHBOARD -->
-      <div id="page-dashboard" class="fade-in">
-        <div class="stats-row" id="t-stats"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" id="dash-grids">
-          <div class="card">
-            <div class="card-header"><div class="card-title">Vazifalar holati</div></div>
-            <canvas id="t-chart-tasks" height="220"></canvas>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">🏆 Loyiha reytingi</div></div>
-            <div id="dash-leaderboard"><div class="empty-state"><div class="icon">🏆</div><p>Loyiha tanlang</p></div></div>
-          </div>
-        </div>
-        <div class="card" style="margin-top:1.5rem">
-          <div class="card-header"><div class="card-title">📚 Loyihalarim</div><a href="#" onclick="switchPage('projects')" class="btn btn-primary btn-sm">Barchasi</a></div>
-          <div id="dash-projects-preview"></div>
-        </div>
+        <a href="#" data-page="chat"><span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+            </svg>
+          </span> Chat</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-sm btn-danger" style="width:100%" onclick="logout()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+          </svg>
+          Chiqish
+        </button>
       </div>
+    </aside>
 
-      <!-- PROJECTS -->
-      <div id="page-projects" class="hidden fade-in">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Mening PBL loyihalarim</div>
-          </div>
-          <div class="projects-grid" id="projects-grid"></div>
-        </div>
+    <main class="panel-main">
+      <div class="panel-topbar">
+        <h2 id="page-title">Dashboard</h2>
+        <div class="topbar-actions"><span id="topbar-user" style="font-size:0.9rem;color:var(--gray)"></span></div>
       </div>
+      <div class="panel-content">
 
-      <!-- PROJECT DETAIL -->
-      <div id="page-project-detail" class="hidden fade-in">
-        <button class="btn btn-gray btn-sm" onclick="switchPage('projects')" style="margin-bottom:1rem">← Orqaga</button>
-        <div id="project-detail-content"></div>
-      </div>
-
-      <!-- AI VAZIFA -->
-      <div id="page-ai-assign" class="hidden fade-in">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title" style="font-size:1.2rem">🤖 AI Vazifa Taqsimoti</div>
-              <div style="font-size:0.875rem;color:var(--gray);margin-top:0.3rem">Groq AI guruh a'zolari soniga qarab vazifalarni avtomatik bosqichlarga ajratadi</div>
-            </div>
-          </div>
-          <div class="form-group" style="max-width:420px">
-            <label style="font-size:1rem">Loyihani tanlang</label>
-            <select class="form-control" id="ai-project-select">
-              <option value="">— Loyiha tanlang —</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:200px">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-            AI bilan taqsimlash
-          </button>
-
-          <div id="ai-result" style="margin-top:1.5rem"></div>
-        </div>
-      </div>
-
-      <!-- CHAT -->
-      <div id="page-chat" class="hidden fade-in">
-        <div class="card">
-          <div class="card-header"><div class="card-title">💬 Loyiha chati</div></div>
-          <div style="display:grid;grid-template-columns:220px 1fr;gap:1rem;min-height:550px">
-            <div style="border-right:1px solid var(--border);padding-right:1rem">
-              <div style="font-size:0.85rem;font-weight:700;text-transform:uppercase;color:var(--gray);margin-bottom:0.8rem">Loyihalar</div>
-              <div id="chat-project-list"></div>
-            </div>
-            <div style="display:flex;flex-direction:column">
-              <div id="chat-title" style="font-weight:700;margin-bottom:0.8rem;color:var(--primary);font-size:1rem">Loyiha tanlang</div>
-              <div class="chat-messages" id="chat-messages" style="flex:1;border:1px solid var(--border);border-radius:var(--radius);background:var(--light)">
-                <div class="empty-state"><div class="icon">💬</div><p>Loyiha tanlang</p></div>
+        <!-- DASHBOARD -->
+        <div id="page-dashboard" class="fade-in">
+          <div class="stats-row" id="t-stats"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" id="dash-grids">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Vazifalar holati</div>
               </div>
-              <div class="chat-input-area" id="chat-input-area" style="display:none">
-                <input type="text" class="form-control" id="chat-input" placeholder="Xabar yozing..." autocomplete="off">
-                <button class="btn btn-primary" id="chat-send">Yuborish</button>
+              <canvas id="t-chart-tasks" height="220"></canvas>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">🏆 Loyiha reytingi</div>
+              </div>
+              <div id="dash-leaderboard">
+                <div class="empty-state">
+                  <div class="icon">🏆</div>
+                  <p>Loyiha tanlang</p>
+                </div>
               </div>
             </div>
           </div>
+          <div class="card" style="margin-top:1.5rem">
+            <div class="card-header">
+              <div class="card-title">📚 Loyihalarim</div><a href="#" onclick="switchPage('projects')"
+                class="btn btn-primary btn-sm">Barchasi</a>
+            </div>
+            <div id="dash-projects-preview"></div>
+          </div>
         </div>
+
+        <!-- PROJECTS -->
+        <div id="page-projects" class="hidden fade-in">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Mening PBL loyihalarim</div>
+            </div>
+            <div class="projects-grid" id="projects-grid"></div>
+          </div>
+        </div>
+
+        <!-- PROJECT DETAIL -->
+        <div id="page-project-detail" class="hidden fade-in">
+          <button class="btn btn-gray btn-sm" onclick="switchPage('projects')" style="margin-bottom:1rem">←
+            Orqaga</button>
+          <div id="project-detail-content"></div>
+        </div>
+
+        <!-- AI VAZIFA (Moved to modal) -->
+
+        <!-- CHAT -->
+        <div id="page-chat" class="hidden fade-in">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">💬 Loyiha chati</div>
+            </div>
+            <div style="display:grid;grid-template-columns:220px 1fr;gap:1rem;min-height:550px">
+              <div style="border-right:1px solid var(--border);padding-right:1rem">
+                <div
+                  style="font-size:0.85rem;font-weight:700;text-transform:uppercase;color:var(--gray);margin-bottom:0.8rem">
+                  Loyihalar</div>
+                <div id="chat-project-list"></div>
+              </div>
+              <div style="display:flex;flex-direction:column">
+                <div id="chat-title" style="font-weight:700;margin-bottom:0.8rem;color:var(--primary);font-size:1rem">
+                  Loyiha tanlang</div>
+                <div class="chat-messages" id="chat-messages"
+                  style="flex:1;border:1px solid var(--border);border-radius:var(--radius);background:var(--light)">
+                  <div class="empty-state">
+                    <div class="icon">💬</div>
+                    <p>Loyiha tanlang</p>
+                  </div>
+                </div>
+                <div class="chat-input-area" id="chat-input-area" style="display:none">
+                  <input type="text" class="form-control" id="chat-input" placeholder="Xabar yozing..."
+                    autocomplete="off">
+                  <button class="btn btn-primary" id="chat-send">Yuborish</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Task Modal -->
+  <div class="modal-overlay" id="modal-task">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Vazifa qo'shish</div>
+        <button class="modal-close" onclick="closeModal('modal-task')">✕</button>
+      </div>
+      <input type="hidden" id="task-project-id">
+      <div class="form-group">
+        <label>Talaba</label>
+        <select class="form-control" id="task-student"></select>
+      </div>
+      <div class="form-group">
+        <label>Vazifa sarlavhasi</label>
+        <input type="text" class="form-control" id="task-title">
+      </div>
+      <div class="form-group">
+        <label>Tavsif</label>
+        <textarea class="form-control" id="task-desc" rows="3"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-task')">Bekor</button>
+        <button class="btn btn-primary btn-sm" onclick="saveTask()">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign All Modal -->
+  <div class="modal-overlay" id="modal-assign-all">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-title">Guruhga vazifa taqsimlash</div>
+        <button class="modal-close" onclick="closeModal('modal-assign-all')">✕</button>
+      </div>
+      <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem">Har bir guruh a'zosiga vazifa taqsimlanadi.</p>
+      <input type="hidden" id="assign-project-id">
+      <div id="assign-tasks-list"></div>
+      <button class="btn btn-info btn-sm" onclick="addTaskRow()" style="margin-top:0.5rem">+ Vazifa qo'shish</button>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-assign-all')">Bekor</button>
+        <button class="btn btn-primary btn-sm" onclick="assignAll()">Taqsimlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Assign Modal -->
+  <div class="modal-overlay" id="modal-ai-assign">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <div class="modal-title">✨ AI orqali vazifa taqsimlash</div>
+        <button class="modal-close" onclick="closeModal('modal-ai-assign')">✕</button>
+      </div>
+      <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem">Guruh a'zolari soniga qarab vazifalar avtomatik
+        yaratiladi.</p>
+      <input type="hidden" id="ai-project-id">
+
+      <div style="text-align:center; padding:1rem 0">
+        <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:200px">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            style="margin-right:5px;vertical-align:middle;">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+          </svg>
+          AI orqali taqsimlash
+        </button>
       </div>
 
-    </div>
-  </main>
-</div>
-
-<!-- Task Modal -->
-<div class="modal-overlay" id="modal-task">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Vazifa qo'shish</div>
-      <button class="modal-close" onclick="closeModal('modal-task')">✕</button>
-    </div>
-    <input type="hidden" id="task-project-id">
-    <div class="form-group">
-      <label>Talaba</label>
-      <select class="form-control" id="task-student"></select>
-    </div>
-    <div class="form-group">
-      <label>Vazifa sarlavhasi</label>
-      <input type="text" class="form-control" id="task-title">
-    </div>
-    <div class="form-group">
-      <label>Tavsif</label>
-      <textarea class="form-control" id="task-desc" rows="3"></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray btn-sm" onclick="closeModal('modal-task')">Bekor</button>
-      <button class="btn btn-primary btn-sm" onclick="saveTask()">Saqlash</button>
+      <div id="ai-result" style="margin-top:1rem"></div>
     </div>
   </div>
-</div>
 
-<!-- Assign All Modal -->
-<div class="modal-overlay" id="modal-assign-all">
-  <div class="modal" style="max-width:600px">
-    <div class="modal-header">
-      <div class="modal-title">Guruhga vazifa taqsimlash</div>
-      <button class="modal-close" onclick="closeModal('modal-assign-all')">✕</button>
-    </div>
-    <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem">Har bir guruh a'zosiga vazifa taqsimlanadi.</p>
-    <input type="hidden" id="assign-project-id">
-    <div id="assign-tasks-list"></div>
-    <button class="btn btn-info btn-sm" onclick="addTaskRow()" style="margin-top:0.5rem">+ Vazifa qo'shish</button>
-    <div class="modal-footer">
-      <button class="btn btn-gray btn-sm" onclick="closeModal('modal-assign-all')">Bekor</button>
-      <button class="btn btn-primary btn-sm" onclick="assignAll()">Taqsimlash</button>
-    </div>
-  </div>
-</div>
-
-<!-- Grade Modal -->
-<div class="modal-overlay" id="modal-grade">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Baholash</div>
-      <button class="modal-close" onclick="closeModal('modal-grade')">✕</button>
-    </div>
-    <input type="hidden" id="grade-task-id">
-    <div class="form-group">
-      <label>Ball (0-100)</label>
-      <input type="number" class="form-control" id="grade-val" min="0" max="100">
-    </div>
-    <div class="form-group">
-      <label>Fikr-mulohaza</label>
-      <textarea class="form-control" id="grade-feedback" rows="3"></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray btn-sm" onclick="closeModal('modal-grade')">Bekor</button>
-      <button class="btn btn-success btn-sm" onclick="submitGrade()">Baholash</button>
+  <!-- Grade Modal -->
+  <div class="modal-overlay" id="modal-grade">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Baholash</div>
+        <button class="modal-close" onclick="closeModal('modal-grade')">✕</button>
+      </div>
+      <input type="hidden" id="grade-task-id">
+      <div class="form-group">
+        <label>Ball (0-100)</label>
+        <input type="number" class="form-control" id="grade-val" min="0" max="100">
+      </div>
+      <div class="form-group">
+        <label>Fikr-mulohaza</label>
+        <textarea class="form-control" id="grade-feedback" rows="3"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('modal-grade')">Bekor</button>
+        <button class="btn btn-success btn-sm" onclick="submitGrade()">Baholash</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="/js/common.js"></script>
-<script>
-const user = requireAuth('teacher');
-document.getElementById('sidebar-username').textContent = user?.full_name || '';
-document.getElementById('topbar-user').textContent = user?.full_name || '';
+  <script src="/js/common.js"></script>
+  <script>
+    const user = requireAuth('teacher');
+    document.getElementById('sidebar-username').textContent = user?.full_name || '';
+    document.getElementById('topbar-user').textContent = user?.full_name || '';
 
-let currentChatProject = null, myProjects = [], chatLastId = 0, chatPollTimer = null;
-let aiCurrentAssignments = null, aiCurrentProjectId = null;
+    let currentChatProject = null, myProjects = [], chatLastId = 0, chatPollTimer = null;
+    let aiCurrentAssignments = null, aiCurrentProjectId = null;
 
-// PAGE NAV
-document.querySelectorAll('.sidebar-nav a').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    switchPage(a.dataset.page);
-    document.querySelectorAll('.sidebar-nav a').forEach(x => x.classList.remove('active'));
-    a.classList.add('active');
-  });
-});
+    // PAGE NAV
+    document.querySelectorAll('.sidebar-nav a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        switchPage(a.dataset.page);
+        document.querySelectorAll('.sidebar-nav a').forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+      });
+    });
 
-function switchPage(page) {
-  document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
-  document.getElementById('page-' + page)?.classList.remove('hidden');
-  const titles = { dashboard: 'Dashboard', projects: 'Mening loyihalarim', chat: 'Chat', 'project-detail': 'Loyiha', 'ai-assign': 'AI Vazifa Taqsimoti' };
-  document.getElementById('page-title').textContent = titles[page] || page;
-  if (page === 'dashboard') loadDashboard();
-  if (page === 'projects') loadProjects();
-  if (page === 'chat') loadChat();
-  if (page === 'ai-assign') loadAiPage();
-}
+    function switchPage(page) {
+      document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('page-' + page)?.classList.remove('hidden');
+      const titles = { dashboard: 'Dashboard', projects: 'Mening loyihalarim', chat: 'Chat', 'project-detail': 'Loyiha' };
+      document.getElementById('page-title').textContent = titles[page] || page;
+      if (page === 'dashboard') loadDashboard();
+      if (page === 'projects') loadProjects();
+      if (page === 'chat') loadChat();
+    }
 
-// DASHBOARD
-let tChart;
-async function loadDashboard() {
-  const [stats, projs] = await Promise.all([
-    apiFetch('/api/teacher/dashboard'),
-    apiFetch('/api/teacher/projects')
-  ]);
-  myProjects = projs;
-  document.getElementById('t-stats').innerHTML = `
+    // DASHBOARD
+    let tChart;
+    async function loadDashboard() {
+      const [stats, projs] = await Promise.all([
+        apiFetch('/api/teacher/dashboard'),
+        apiFetch('/api/teacher/projects')
+      ]);
+      myProjects = projs;
+      document.getElementById('t-stats').innerHTML = `
     <div class="stat-card"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5b4fcf" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg></div><div class="stat-info"><h3>${stats.projects}</h3><p>Loyihalarim</p></div></div>
     <div class="stat-card info"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="2"><rect x="2" y="5" width="20" height="16" rx="2"/><path d="M16 3v4M8 3v4M2 9h20"/></svg></div><div class="stat-info"><h3>${stats.tasks_total}</h3><p>Jami vazifalar</p></div></div>
     <div class="stat-card warning"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f39c12" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="stat-info"><h3>${stats.tasks_submitted}</h3><p>Baholash kutmoqda</p></div></div>
     <div class="stat-card success"><div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-info"><h3>${stats.tasks_graded}</h3><p>Baholangan</p></div></div>
   `;
 
-  if (tChart) tChart.destroy();
-  tChart = new Chart(document.getElementById('t-chart-tasks'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Kutilmoqda', 'Topshirildi', 'Baholandi'],
-      datasets: [{ data: [stats.tasks_total - stats.tasks_submitted - stats.tasks_graded, stats.tasks_submitted, stats.tasks_graded], backgroundColor: ['#6c757d','#f39c12','#27ae60'], borderWidth: 0 }]
-    },
-    options: { plugins: { legend: { position: 'bottom' } }, cutout: '60%' }
-  });
+      if (tChart) tChart.destroy();
+      tChart = new Chart(document.getElementById('t-chart-tasks'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Kutilmoqda', 'Topshirildi', 'Baholandi'],
+          datasets: [{ data: [stats.tasks_total - stats.tasks_submitted - stats.tasks_graded, stats.tasks_submitted, stats.tasks_graded], backgroundColor: ['#6c757d', '#f39c12', '#27ae60'], borderWidth: 0 }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } }, cutout: '60%' }
+      });
 
-  document.getElementById('dash-projects-preview').innerHTML = projs.slice(0,4).map(p => `
+      document.getElementById('dash-projects-preview').innerHTML = projs.slice(0, 4).map(p => `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:0.8rem 0;border-bottom:1px solid var(--border)">
       <div>
         <strong style="font-size:1rem">${p.title}</strong>
-        <span style="font-size:0.8rem;color:var(--gray);margin-left:0.5rem">${p.group_name||'Guruhsiz'}</span>
+        <span style="font-size:0.8rem;color:var(--gray);margin-left:0.5rem">${p.group_name || 'Guruhsiz'}</span>
       </div>
       <div style="display:flex;align-items:center;gap:0.8rem">
         <span class="badge badge-info">${p.graded_count}/${p.task_count} vazifa</span>
@@ -345,80 +440,81 @@ async function loadDashboard() {
       </div>
     </div>`).join('') || '<div class="empty-state"><p>Loyiha yo\'q</p></div>';
 
-  if (projs.length > 0) {
-    const detail = await apiFetch(`/api/teacher/projects/${projs[0].id}`);
-    renderLeaderboard(detail.leaderboard, document.getElementById('dash-leaderboard'));
-  }
-}
+      if (projs.length > 0) {
+        const detail = await apiFetch(`/api/teacher/projects/${projs[0].id}`);
+        renderLeaderboard(detail.leaderboard, document.getElementById('dash-leaderboard'));
+      }
+    }
 
-function renderLeaderboard(lb, container) {
-  if (!lb.length) { container.innerHTML = '<div class="empty-state"><div class="icon">🏆</div><p>Talabalar yo\'q</p></div>'; return; }
-  const medals = ['🥇','🥈','🥉'];
-  container.innerHTML = '<ul class="leaderboard">' + lb.map((s,i) => `
+    function renderLeaderboard(lb, container) {
+      if (!lb.length) { container.innerHTML = '<div class="empty-state"><div class="icon">🏆</div><p>Talabalar yo\'q</p></div>'; return; }
+      const medals = ['🥇', '🥈', '🥉'];
+      container.innerHTML = '<ul class="leaderboard">' + lb.map((s, i) => `
     <li>
-      <div class="rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div>
+      <div class="rank ${i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : ''}">${i + 1}</div>
       <div style="flex:1">
-        <div style="font-weight:600;font-size:0.95rem">${medals[i]||''} ${s.full_name}</div>
+        <div style="font-weight:600;font-size:0.95rem">${medals[i] || ''} ${s.full_name}</div>
         <div style="font-size:0.8rem;color:var(--gray)">${s.graded_tasks} vazifa baholandi</div>
       </div>
-      <div class="grade-circle ${gradeClass(s.avg_grade)}" style="width:42px;height:42px;font-size:0.95rem">${s.avg_grade?Math.round(s.avg_grade):'—'}</div>
+      <div class="grade-circle ${gradeClass(s.avg_grade)}" style="width:42px;height:42px;font-size:0.95rem">${s.avg_grade ? Math.round(s.avg_grade) : '—'}</div>
     </li>`).join('') + '</ul>';
-}
+    }
 
-// PROJECTS
-async function loadProjects() {
-  const projs = await apiFetch('/api/teacher/projects');
-  myProjects = projs;
-  const grid = document.getElementById('projects-grid');
-  if (!projs.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">📋</div><h3>Hozircha loyiha yo\'q</h3><p>Admin tomonidan loyiha biriktirilishi kutilmoqda.</p></div>';
-    return;
-  }
-  grid.innerHTML = projs.map(p => `
+    // PROJECTS
+    async function loadProjects() {
+      const projs = await apiFetch('/api/teacher/projects');
+      myProjects = projs;
+      const grid = document.getElementById('projects-grid');
+      if (!projs.length) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">📋</div><h3>Hozircha loyiha yo\'q</h3><p>Admin tomonidan loyiha biriktirilishi kutilmoqda.</p></div>';
+        return;
+      }
+      grid.innerHTML = projs.map(p => `
     <div class="project-card" onclick="loadProjectDetail(${p.id})">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem">
         <h3>${p.title}</h3>
         ${statusBadge(p.status)}
       </div>
       <div class="meta">
-        👥 ${p.group_name||'Guruhsiz'} &nbsp;•&nbsp; 📅 ${formatDate(p.deadline)||'Muddatsiz'}
+        👥 ${p.group_name || 'Guruhsiz'} &nbsp;•&nbsp; 📅 ${formatDate(p.deadline) || 'Muddatsiz'}
       </div>
       <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem">
-        <div class="progress" style="flex:1"><div class="progress-bar" style="width:${p.task_count?Math.round(p.graded_count/p.task_count*100):0}%"></div></div>
+        <div class="progress" style="flex:1"><div class="progress-bar" style="width:${p.task_count ? Math.round(p.graded_count / p.task_count * 100) : 0}%"></div></div>
         <span style="font-size:0.8rem;color:var(--gray)">${p.graded_count}/${p.task_count}</span>
       </div>
       <button class="btn btn-primary btn-sm">Loyihani boshqarish →</button>
     </div>`).join('');
-}
+    }
 
-// Project detail with active project tracking
-let currentDetailProjectId = null;
-async function loadProjectDetail(projectId) {
-  currentDetailProjectId = projectId;
-  switchPage('project-detail');
-  document.getElementById('project-detail-content').innerHTML = '<div style="text-align:center;padding:2rem">⏳ Yuklanmoqda...</div>';
+    // Project detail with active project tracking
+    let currentDetailProjectId = null;
+    async function loadProjectDetail(projectId) {
+      currentDetailProjectId = projectId;
+      switchPage('project-detail');
+      document.getElementById('project-detail-content').innerHTML = '<div style="text-align:center;padding:2rem">⏳ Yuklanmoqda...</div>';
 
-  const data = await apiFetch(`/api/teacher/projects/${projectId}`);
-  const { project, tasks, leaderboard } = data;
-  const submitted = tasks.filter(t => t.status === 'submitted');
+      const data = await apiFetch(`/api/teacher/projects/${projectId}`);
+      const { project, tasks, leaderboard } = data;
+      const submitted = tasks.filter(t => t.status === 'submitted');
 
-  document.getElementById('project-detail-content').innerHTML = `
+      document.getElementById('project-detail-content').innerHTML = `
     <div class="card">
       <div class="card-header">
         <div>
           <div class="card-title" style="font-size:1.2rem">${project.title}</div>
-          <div style="font-size:0.9rem;color:var(--gray);margin-top:0.2rem">${project.description||''}</div>
+          <div style="font-size:0.9rem;color:var(--gray);margin-top:0.2rem">${project.description || ''}</div>
         </div>
         <div style="display:flex;gap:0.5rem">
-          <button class="btn btn-accent btn-sm" onclick="openAssignAll(${project.id})">📤 Guruhga taqsimlash</button>
-          <button class="btn btn-primary btn-sm" onclick="openAddTask(${project.id},${project.group_id||0})">+ Vazifa qo'shish</button>
+          <button class="btn btn-accent btn-sm" onclick="openAiAssign(${project.id})">✨ AI Vazifa</button>
+          <button class="btn btn-info btn-sm" onclick="openAssignAll(${project.id})">📤 Taqsimlash</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddTask(${project.id},${project.group_id || 0})">+ Qoshish</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
         <div class="stat-card"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5b4fcf" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg></div><div class="stat-info"><h3>${tasks.length}</h3><p>Jami vazifa</p></div></div>
         <div class="stat-card warning"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f39c12" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><div class="stat-info"><h3>${submitted.length}</h3><p>Kutilmoqda</p></div></div>
-        <div class="stat-card success"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-info"><h3>${tasks.filter(t=>t.status==='graded').length}</h3><p>Baholangan</p></div></div>
-        <div class="stat-card info"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div class="stat-info"><h3>${tasks.filter(t=>t.grade).length?Math.round(tasks.filter(t=>t.grade).reduce((a,b)=>a+b.grade,0)/tasks.filter(t=>t.grade).length):0}</h3><p>O'rtacha ball</p></div></div>
+        <div class="stat-card success"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-info"><h3>${tasks.filter(t => t.status === 'graded').length}</h3><p>Baholangan</p></div></div>
+        <div class="stat-card info"><div class="stat-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div class="stat-info"><h3>${tasks.filter(t => t.grade).length ? Math.round(tasks.filter(t => t.grade).reduce((a, b) => a + b.grade, 0) / tasks.filter(t => t.grade).length) : 0}</h3><p>O'rtacha ball</p></div></div>
       </div>
     </div>
 
@@ -431,18 +527,18 @@ async function loadProjectDetail(projectId) {
             <thead><tr><th>Talaba</th><th>Vazifa</th><th>Holat</th><th>Ball</th><th>Topshirildi</th><th>Amal</th></tr></thead>
             <tbody>
               ${tasks.map(t => `
-                <tr class="${t.status==='submitted'?'task-row-submitted':''}">
+                <tr class="${t.status === 'submitted' ? 'task-row-submitted' : ''}">
                   <td><strong>${t.student_name}</strong></td>
-                  <td><span style="font-size:0.95rem">${t.title}</span><br><small style="color:var(--gray)">${t.description||''}</small></td>
+                  <td><span style="font-size:0.95rem">${t.title}</span><br><small style="color:var(--gray)">${t.description || ''}</small></td>
                   <td>${statusBadge(t.status)}</td>
                   <td>${t.grade ? `<div class="grade-circle ${gradeClass(t.grade)}" style="width:36px;height:36px;font-size:0.9rem">${t.grade}</div>` : '—'}</td>
                   <td style="font-size:0.875rem">${formatDateTime(t.submitted_at)}</td>
                   <td style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap">
-                    ${t.file_path ? `<a href="/api/teacher/tasks/${t.id}/download" class="btn btn-sm btn-info" title="${t.original_filename||t.file_path}">
+                    ${t.file_path ? `<button onclick="downloadTask(${t.id}, '${t.original_filename || 'vazifa'}')" class="btn btn-sm btn-info" title="${t.original_filename || t.file_path}">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                       Yuklab olish
-                    </a>` : ''}
-                    ${t.status==='submitted' ? `<button class="btn btn-sm btn-success" onclick="openGrade(${t.id})">Baholay</button>` : ''}
+                    </button>` : ''}
+                    ${t.status === 'submitted' ? `<button class="btn btn-sm btn-success" onclick="openGrade(${t.id})">Baholash</button>` : ''}
                   </td>
                 </tr>`).join('')}
             </tbody>
@@ -457,125 +553,122 @@ async function loadProjectDetail(projectId) {
     </div>
   `;
 
-  renderLeaderboard(leaderboard, document.getElementById('detail-leaderboard'));
-}
+      renderLeaderboard(leaderboard, document.getElementById('detail-leaderboard'));
+    }
 
-async function openAddTask(projectId, groupId) {
-  document.getElementById('task-project-id').value = projectId;
-  document.getElementById('task-title').value = '';
-  document.getElementById('task-desc').value = '';
-  let students = [];
-  if (groupId) {
-    students = await apiFetch(`/api/teacher/groups/${groupId}/students`);
-  }
-  document.getElementById('task-student').innerHTML = students.length ?
-    students.map(s => `<option value="${s.id}">${s.full_name}</option>`).join('') :
-    '<option value="">Talabalar yo\'q</option>';
-  openModal('modal-task');
-}
+    async function openAddTask(projectId, groupId) {
+      document.getElementById('task-project-id').value = projectId;
+      document.getElementById('task-title').value = '';
+      document.getElementById('task-desc').value = '';
+      let students = [];
+      if (groupId) {
+        students = await apiFetch(`/api/teacher/groups/${groupId}/students`);
+      }
+      document.getElementById('task-student').innerHTML = students.length ?
+        students.map(s => `<option value="${s.id}">${s.full_name}</option>`).join('') :
+        '<option value="">Talabalar yo\'q</option>';
+      openModal('modal-task');
+    }
 
-async function saveTask() {
-  const projectId = document.getElementById('task-project-id').value;
-  const student_id = document.getElementById('task-student').value;
-  const title = document.getElementById('task-title').value.trim();
-  const description = document.getElementById('task-desc').value.trim();
-  if (!student_id || !title) return toast('Talaba va sarlavha kerak', 'error');
-  try {
-    await apiFetch(`/api/teacher/projects/${projectId}/tasks`, {method:'POST', body: JSON.stringify({student_id, title, description})});
-    toast('Vazifa qo\'shildi!', 'success');
-    closeModal('modal-task');
-    loadProjectDetail(projectId);
-  } catch(e) { toast(e.message, 'error'); }
-}
+    async function saveTask() {
+      const projectId = document.getElementById('task-project-id').value;
+      const student_id = document.getElementById('task-student').value;
+      const title = document.getElementById('task-title').value.trim();
+      const description = document.getElementById('task-desc').value.trim();
+      if (!student_id || !title) return toast('Talaba va sarlavha kerak', 'error');
+      try {
+        await apiFetch(`/api/teacher/projects/${projectId}/tasks`, { method: 'POST', body: JSON.stringify({ student_id, title, description }) });
+        toast('Vazifa qo\'shildi!', 'success');
+        closeModal('modal-task');
+        loadProjectDetail(projectId);
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-function openAssignAll(projectId) {
-  document.getElementById('assign-project-id').value = projectId;
-  document.getElementById('assign-tasks-list').innerHTML = '';
-  addTaskRow(); addTaskRow();
-  openModal('modal-assign-all');
-}
+    function openAssignAll(projectId) {
+      document.getElementById('assign-project-id').value = projectId;
+      document.getElementById('assign-tasks-list').innerHTML = '';
+      addTaskRow(); addTaskRow();
+      openModal('modal-assign-all');
+    }
 
-function addTaskRow() {
-  const row = document.createElement('div');
-  row.className = 'task-input-row';
-  row.style.cssText = 'display:flex;gap:0.5rem;margin-bottom:0.5rem;align-items:flex-start';
-  row.innerHTML = `
+    function addTaskRow() {
+      const row = document.createElement('div');
+      row.className = 'task-input-row';
+      row.style.cssText = 'display:flex;gap:0.5rem;margin-bottom:0.5rem;align-items:flex-start';
+      row.innerHTML = `
     <input type="text" class="form-control" placeholder="Vazifa nomi" style="flex:1.5">
     <textarea class="form-control" placeholder="Tavsif" style="flex:2;height:40px;resize:none"></textarea>
     <button class="btn btn-danger btn-sm" onclick="this.closest('.task-input-row').remove()">✕</button>
   `;
-  document.getElementById('assign-tasks-list').appendChild(row);
-}
+      document.getElementById('assign-tasks-list').appendChild(row);
+    }
 
-async function assignAll() {
-  const projectId = document.getElementById('assign-project-id').value;
-  const rows = document.querySelectorAll('.task-input-row');
-  const tasks = [...rows].map(r => ({
-    title: r.querySelector('input').value.trim(),
-    description: r.querySelector('textarea').value.trim()
-  })).filter(t => t.title);
-  if (!tasks.length) return toast('Kamida 1ta vazifa kerak', 'error');
-  try {
-    const r = await apiFetch(`/api/teacher/projects/${projectId}/assign-group`, {method:'POST', body: JSON.stringify({tasks})});
-    toast(`${r.assigned} ta talabaga taqsimlandi!`, 'success');
-    closeModal('modal-assign-all');
-    loadProjectDetail(projectId);
-  } catch(e) { toast(e.message, 'error'); }
-}
+    async function assignAll() {
+      const projectId = document.getElementById('assign-project-id').value;
+      const rows = document.querySelectorAll('.task-input-row');
+      const tasks = [...rows].map(r => ({
+        title: r.querySelector('input').value.trim(),
+        description: r.querySelector('textarea').value.trim()
+      })).filter(t => t.title);
+      if (!tasks.length) return toast('Kamida 1ta vazifa kerak', 'error');
+      try {
+        const r = await apiFetch(`/api/teacher/projects/${projectId}/assign-group`, { method: 'POST', body: JSON.stringify({ tasks }) });
+        toast(`${r.assigned} ta talabaga taqsimlandi!`, 'success');
+        closeModal('modal-assign-all');
+        loadProjectDetail(projectId);
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-function openGrade(taskId) {
-  document.getElementById('grade-task-id').value = taskId;
-  document.getElementById('grade-val').value = '';
-  document.getElementById('grade-feedback').value = '';
-  openModal('modal-grade');
-}
+    function openGrade(taskId) {
+      document.getElementById('grade-task-id').value = taskId;
+      document.getElementById('grade-val').value = '';
+      document.getElementById('grade-feedback').value = '';
+      openModal('modal-grade');
+    }
 
-async function submitGrade() {
-  const taskId = document.getElementById('grade-task-id').value;
-  const grade = parseInt(document.getElementById('grade-val').value);
-  const feedback = document.getElementById('grade-feedback').value.trim();
-  if (isNaN(grade) || grade < 0 || grade > 100) return toast('Ball 0-100 orasida bo\'lishi kerak', 'error');
-  try {
-    await apiFetch(`/api/teacher/tasks/${taskId}/grade`, {method:'PUT', body: JSON.stringify({grade, feedback})});
-    toast('Baholandi!', 'success');
-    closeModal('modal-grade');
-    if (currentDetailProjectId) loadProjectDetail(currentDetailProjectId);
-  } catch(e) { toast(e.message, 'error'); }
-}
+    async function submitGrade() {
+      const taskId = document.getElementById('grade-task-id').value;
+      const grade = parseInt(document.getElementById('grade-val').value);
+      const feedback = document.getElementById('grade-feedback').value.trim();
+      if (isNaN(grade) || grade < 0 || grade > 100) return toast('Ball 0-100 orasida bo\'lishi kerak', 'error');
+      try {
+        await apiFetch(`/api/teacher/tasks/${taskId}/grade`, { method: 'PUT', body: JSON.stringify({ grade, feedback }) });
+        toast('Baholandi!', 'success');
+        closeModal('modal-grade');
+        if (currentDetailProjectId) loadProjectDetail(currentDetailProjectId);
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-// AI VAZIFA PAGE
-async function loadAiPage() {
-  const projs = await apiFetch('/api/teacher/projects');
-  myProjects = projs;
-  const sel = document.getElementById('ai-project-select');
-  sel.innerHTML = '<option value="">— Loyiha tanlang —</option>' +
-    projs.map(p => `<option value="${p.id}">${p.title} (${p.group_name||'Guruhsiz'})</option>`).join('');
-  document.getElementById('ai-result').innerHTML = '';
-  aiCurrentAssignments = null;
-  aiCurrentProjectId = null;
-}
+    // AI VAZIFA MODAL LOGIC
+    function openAiAssign(projectId) {
+      document.getElementById('ai-project-id').value = projectId;
+      document.getElementById('ai-result').innerHTML = '';
+      aiCurrentAssignments = null;
+      aiCurrentProjectId = null;
+      openModal('modal-ai-assign');
+    }
 
-async function aiGenerateTasks() {
-  const projectId = document.getElementById('ai-project-select').value;
-  if (!projectId) return toast('Avval loyiha tanlang', 'error');
+    async function aiGenerateTasks() {
+      const projectId = document.getElementById('ai-project-id').value;
+      if (!projectId) return toast('Avval loyiha tanlang', 'error');
 
-  const btn = document.getElementById('ai-generate-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ AI ishlayapti...';
+      const btn = document.getElementById('ai-generate-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ AI ishlayapti...';
 
-  document.getElementById('ai-result').innerHTML = `
+      document.getElementById('ai-result').innerHTML = `
     <div class="ai-loading">
       <div class="ai-spinner"></div>
       <div style="font-size:1rem;font-weight:600;color:var(--primary)">Groq AI vazifalarni tahlil qilmoqda...</div>
       <div style="font-size:0.875rem;color:var(--gray)">Guruh a'zolari soniga qarab bosqichlarga ajratyapti</div>
     </div>`;
 
-  try {
-    const data = await apiFetch(`/api/teacher/projects/${projectId}/ai-assign-preview`, {method:'POST', body: JSON.stringify({})});
-    aiCurrentAssignments = data.assignments;
-    aiCurrentProjectId = projectId;
+      try {
+        const data = await apiFetch(`/api/teacher/projects/${projectId}/ai-assign-preview`, { method: 'POST', body: JSON.stringify({}) });
+        aiCurrentAssignments = data.assignments;
+        aiCurrentProjectId = projectId;
 
-    document.getElementById('ai-result').innerHTML = `
+        document.getElementById('ai-result').innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
         <div>
           <div style="font-size:1.1rem;font-weight:700;color:var(--primary)">✅ AI ${data.total} ta vazifa taklif qilyapti</div>
@@ -591,7 +684,7 @@ async function aiGenerateTasks() {
       </div>
       ${data.assignments.map((a, i) => `
         <div class="ai-assignment-card">
-          <div class="ai-step-badge">${i+1}</div>
+          <div class="ai-step-badge">${i + 1}</div>
           <div class="task-info">
             <div class="student-name">👤 ${a.student_name}</div>
             <div class="task-title">${a.title}</div>
@@ -599,98 +692,106 @@ async function aiGenerateTasks() {
           </div>
         </div>`).join('')}
     `;
-  } catch(e) {
-    document.getElementById('ai-result').innerHTML = `
+      } catch (e) {
+        document.getElementById('ai-result').innerHTML = `
       <div class="alert alert-danger">❌ ${e.message}</div>`;
-    toast(e.message, 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> AI bilan taqsimlash`;
-  }
-}
+        toast(e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> AI bilan taqsimlash`;
+      }
+    }
 
-async function aiConfirmTasks() {
-  if (!aiCurrentAssignments || !aiCurrentProjectId) return;
-  try {
-    const r = await apiFetch(`/api/teacher/projects/${aiCurrentProjectId}/ai-assign-confirm`, {
-      method: 'POST', body: JSON.stringify({ assignments: aiCurrentAssignments })
-    });
-    toast(`✅ ${r.assigned} ta talabaga vazifa berildi!`, 'success');
-    document.getElementById('ai-result').innerHTML = `
-      <div class="alert alert-success" style="font-size:1rem">
+    async function aiConfirmTasks() {
+      if (!aiCurrentAssignments || !aiCurrentProjectId) return;
+      try {
+        const r = await apiFetch(`/api/teacher/projects/${aiCurrentProjectId}/ai-assign-confirm`, {
+          method: 'POST', body: JSON.stringify({ assignments: aiCurrentAssignments })
+        });
+        toast(`✅ ${r.assigned} ta talabaga vazifa berildi!`, 'success');
+        document.getElementById('ai-result').innerHTML = `
+      <div class="alert alert-success" style="font-size:1rem; margin-top:10px">
         ✅ <strong>${r.assigned} ta</strong> talabaga vazifalar muvaffaqiyatli taqsimlandi!
-        <a href="#" onclick="switchPage('projects')" style="margin-left:1rem;text-decoration:underline">Loyihalarga o'tish →</a>
       </div>`;
-    aiCurrentAssignments = null;
-    aiCurrentProjectId = null;
-  } catch(e) { toast(e.message, 'error'); }
-}
+        const currentModalProjId = aiCurrentProjectId;
+        aiCurrentAssignments = null;
+        aiCurrentProjectId = null;
 
-// CHAT (polling)
-async function loadChat() {
-  const projs = await apiFetch('/api/teacher/my-chats');
-  const list = document.getElementById('chat-project-list');
-  list.innerHTML = projs.map(p => `
+        setTimeout(() => {
+          closeModal('modal-ai-assign');
+          loadProjectDetail(currentModalProjId);
+        }, 1500);
+        aiCurrentAssignments = null;
+        aiCurrentProjectId = null;
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // CHAT (polling)
+    async function loadChat() {
+      const projs = await apiFetch('/api/teacher/my-chats');
+      const list = document.getElementById('chat-project-list');
+      list.innerHTML = projs.map(p => `
     <div style="padding:0.6rem 0.8rem;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:500;margin-bottom:0.3rem;transition:background 0.2s"
-      onclick="joinChat(${p.id},'${p.title.replace(/'/g,"\\'")}',this)"
+      onclick="joinChat(${p.id},'${p.title.replace(/'/g, "\\'")}',this)"
       onmouseover="this.style.background='var(--primary-light)'"
       onmouseout="this.style.background=''">${p.title}</div>`).join('') ||
-    '<div style="color:var(--gray);font-size:0.9rem">Loyiha yo\'q</div>';
-}
+        '<div style="color:var(--gray);font-size:0.9rem">Loyiha yo\'q</div>';
+    }
 
-async function joinChat(projectId, title, el) {
-  if (chatPollTimer) clearInterval(chatPollTimer);
-  currentChatProject = projectId;
-  chatLastId = 0;
-  document.getElementById('chat-title').textContent = title;
-  document.querySelectorAll('#chat-project-list > div').forEach(d => d.style.background = '');
-  if (el) el.style.background = 'var(--primary-light)';
-  document.getElementById('chat-input-area').style.display = 'flex';
+    async function joinChat(projectId, title, el) {
+      if (chatPollTimer) clearInterval(chatPollTimer);
+      currentChatProject = projectId;
+      chatLastId = 0;
+      document.getElementById('chat-title').textContent = title;
+      document.querySelectorAll('#chat-project-list > div').forEach(d => d.style.background = '');
+      if (el) el.style.background = 'var(--primary-light)';
+      document.getElementById('chat-input-area').style.display = 'flex';
 
-  const msgs = await apiFetch(`/api/teacher/chat/${projectId}`);
-  const container = document.getElementById('chat-messages');
-  container.innerHTML = '';
-  msgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
-  container.scrollTop = container.scrollHeight;
+      const msgs = await apiFetch(`/api/teacher/chat/${projectId}`);
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = '';
+      msgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
+      container.scrollTop = container.scrollHeight;
 
-  chatPollTimer = setInterval(async () => {
-    if (!currentChatProject) return;
-    try {
-      const newMsgs = await apiFetch(`/api/teacher/chat/${currentChatProject}?last_id=${chatLastId}`);
-      newMsgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
-    } catch {}
-  }, 3000);
-}
+      chatPollTimer = setInterval(async () => {
+        if (!currentChatProject) return;
+        try {
+          const newMsgs = await apiFetch(`/api/teacher/chat/${currentChatProject}?last_id=${chatLastId}`);
+          newMsgs.forEach(m => { appendMessage(m); if (m.id > chatLastId) chatLastId = m.id; });
+        } catch { }
+      }, 3000);
+    }
 
-function appendMessage(msg) {
-  const container = document.getElementById('chat-messages');
-  const isMe = msg.user_id == user.id;
-  const div = document.createElement('div');
-  div.className = `chat-bubble ${isMe ? 'mine' : 'other'}`;
-  div.innerHTML = `
-    ${!isMe ? `<div class="sender">${msg.full_name} <span class="badge badge-${msg.role==='teacher'?'primary':'gray'}" style="font-size:0.7rem">${msg.role==='teacher'?"O'qituvchi":"Talaba"}</span></div>` : ''}
+    function appendMessage(msg) {
+      const container = document.getElementById('chat-messages');
+      const isMe = msg.user_id == user.id;
+      const div = document.createElement('div');
+      div.className = `chat-bubble ${isMe ? 'mine' : 'other'}`;
+      div.innerHTML = `
+    ${!isMe ? `<div class="sender">${msg.full_name} <span class="badge badge-${msg.role === 'teacher' ? 'primary' : 'gray'}" style="font-size:0.7rem">${msg.role === 'teacher' ? "O'qituvchi" : "Talaba"}</span></div>` : ''}
     <div>${msg.message}</div>
     <div class="time">${formatDateTime(msg.created_at)}</div>`;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
 
-document.getElementById('chat-send').addEventListener('click', sendMsg);
-document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
+    document.getElementById('chat-send').addEventListener('click', sendMsg);
+    document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
 
-async function sendMsg() {
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if (!msg || !currentChatProject) return;
-  input.value = '';
-  try {
-    const saved = await apiFetch(`/api/teacher/chat/${currentChatProject}`, { method: 'POST', body: JSON.stringify({ message: msg }) });
-    if (saved.id > chatLastId) { chatLastId = saved.id; appendMessage(saved); }
-  } catch (e) { toast(e.message, 'error'); }
-}
+    async function sendMsg() {
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg || !currentChatProject) return;
+      input.value = '';
+      try {
+        const saved = await apiFetch(`/api/teacher/chat/${currentChatProject}`, { method: 'POST', body: JSON.stringify({ message: msg }) });
+        if (saved.id > chatLastId) { chatLastId = saved.id; appendMessage(saved); }
+      } catch (e) { toast(e.message, 'error'); }
+    }
 
-initNav();
-loadDashboard();
-</script>
+    initNav();
+    loadDashboard();
+  </script>
 </body>
+
 </html>

@@ -101,3 +101,33 @@ function initNav() {
     });
   }
 }
+
+async function downloadTask(taskId, fileName) {
+  try {
+    const token = getToken();
+    if (!token) throw new Error("Avtorizatsiya yo'q");
+
+    toast('Yuklanmoqda...', 'info');
+    const res = await fetch(`/api/teacher/tasks/${taskId}/download`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Serverda fayl topilmadi');
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = fileName || `vazifa_${taskId}`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
