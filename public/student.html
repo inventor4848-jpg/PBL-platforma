@@ -326,14 +326,27 @@
     async function submitTask() {
       const taskId = document.getElementById('submit-task-id').value;
       const fileInput = document.getElementById('submit-file');
-      const formData = new FormData();
-      if (fileInput.files[0]) formData.append('file', fileInput.files[0]);
+      const file = fileInput.files[0];
 
       try {
+        const payload = { original_filename: null, file_data: null };
+        if (file) {
+          payload.original_filename = file.name;
+          payload.file_data = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = () => reject(new Error('Faylni o\'qib bo\'lmadi'));
+            reader.readAsDataURL(file);
+          });
+        }
+
         const res = await fetch(`/api/student/tasks/${taskId}/submit`, {
           method: 'POST',
-          headers: { Authorization: 'Bearer ' + getToken() },
-          body: formData
+          headers: {
+            'Authorization': 'Bearer ' + getToken(),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);

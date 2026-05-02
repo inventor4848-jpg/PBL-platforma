@@ -337,16 +337,20 @@
       <div id="ai-setup-section">
         <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.2rem;flex-wrap:wrap">
           <div>
-            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">TOPSHIRISH MUDDATI</label>
+            <label
+              style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">TOPSHIRISH
+              MUDDATI</label>
             <input type="date" class="form-control" id="ai-deadline" style="width:180px">
           </div>
           <div style="flex:1;min-width:200px">
-            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">GURUH A'ZOLARI</label>
+            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">GURUH
+              A'ZOLARI</label>
             <div id="ai-students-list"></div>
           </div>
         </div>
         <div style="text-align:center;padding:0.5rem 0 0.2rem">
-          <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:220px" disabled>
+          <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:220px"
+            disabled>
             ✨ AI bilan vazifa yaratish
           </button>
         </div>
@@ -510,7 +514,7 @@
           <div style="font-size:0.9rem;color:var(--gray);margin-top:0.2rem">${project.description || ''}</div>
         </div>
         <div style="display:flex;gap:0.5rem">
-          <button class="btn btn-accent btn-sm" onclick="openAiAssign(${project.id},${project.group_id||0})">✨ AI Vazifa</button>
+          <button class="btn btn-accent btn-sm" onclick="openAiAssign(${project.id},${project.group_id || 0})">✨ AI Vazifa</button>
           <button class="btn btn-info btn-sm" onclick="openAssignAll(${project.id})">📤 Taqsimlash</button>
           <button class="btn btn-primary btn-sm" onclick="openAddTask(${project.id},${project.group_id || 0})">+ Qoshish</button>
         </div>
@@ -535,16 +539,18 @@
                 <tr class="${t.status === 'submitted' ? 'task-row-submitted' : ''}">
                   <td><strong>${t.student_name}</strong></td>
                   <td><span style="font-size:0.95rem">${t.title}</span><br><small style="color:var(--gray)">${t.description || ''}</small></td>
-                  <td style="font-size:0.82rem;color:var(--gray)">${t.deadline ? t.deadline.slice(0,10) : '—'}</td>
+                  <td style="font-size:0.82rem;color:var(--gray)">${t.deadline ? t.deadline.slice(0, 10) : '—'}</td>
                   <td>${statusBadge(t.status)}</td>
                   <td>${t.grade ? `<div class="grade-circle ${gradeClass(t.grade)}" style="width:36px;height:36px;font-size:0.9rem">${t.grade}</div>` : '—'}</td>
                   <td style="font-size:0.875rem">${formatDateTime(t.submitted_at)}</td>
                   <td style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap">
-                    ${t.file_path ? `<button onclick="downloadTask(${t.id}, '${t.original_filename || 'vazifa'}')" class="btn btn-sm btn-info" title="${t.original_filename || t.file_path}">
+                    ${t.file_path || t.file_data ? `<button onclick="downloadTask(${t.id}, '${t.original_filename || 'vazifa'}')" class="btn btn-sm btn-info" title="${t.original_filename || t.file_path || 'fayl'}">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                       Yuklab olish
                     </button>` : ''}
                     ${t.status === 'submitted' ? `<button class="btn btn-sm btn-success" onclick="openGrade(${t.id})">Baholash</button>` : ''}
+                    <button class="btn btn-sm btn-gray" onclick="editTask(${t.id}, '${t.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${(t.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${t.deadline ? t.deadline.slice(0, 10) : ''}')">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})">🗑️</button>
                   </td>
                 </tr>`).join('')}
             </tbody>
@@ -645,6 +651,56 @@
       } catch (e) { toast(e.message, 'error'); }
     }
 
+    function editTask(taskId, title, desc, deadline) {
+      document.getElementById('task-project-id').value = '';
+      document.getElementById('task-student').innerHTML = `<option value="edit">-- Tahrirlash rejimida --</option>`;
+      document.getElementById('task-student').disabled = true;
+      document.getElementById('task-title').value = title;
+      document.getElementById('task-desc').value = desc;
+      // if modal doesn't have a deadline field, we can add it, wait modal-task has no deadline field!
+      // But we will pass it anyway
+      window._editTaskId = taskId;
+      window._editTaskDeadline = deadline;
+      openModal('modal-task');
+    }
+
+    async function saveTask() {
+      const title = document.getElementById('task-title').value.trim();
+      const description = document.getElementById('task-desc').value.trim();
+      if (!title) return toast('Sarlavha kiritilmagan', 'error');
+
+      if (window._editTaskId) { // Edit mode
+        try {
+          await apiFetch(`/api/teacher/tasks/${window._editTaskId}`, { method: 'PUT', body: JSON.stringify({ title, description, deadline: window._editTaskDeadline || null }) });
+          toast("Tahrirlandi!", 'success');
+          closeModal('modal-task');
+          window._editTaskId = null;
+          if (currentDetailProjectId) loadProjectDetail(currentDetailProjectId);
+        } catch (e) { toast(e.message, 'error'); }
+        return;
+      }
+
+      // Add mode
+      const projectId = document.getElementById('task-project-id').value;
+      const student_id = document.getElementById('task-student').value;
+      if (!student_id || !title) return toast('Talaba va sarlavha kerak', 'error');
+      try {
+        await apiFetch(`/api/teacher/projects/${projectId}/tasks`, { method: 'POST', body: JSON.stringify({ student_id, title, description }) });
+        toast('Vazifa qo\'shildi!', 'success');
+        closeModal('modal-task');
+        loadProjectDetail(projectId);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function deleteTask(taskId) {
+      if (!confirm("Haqiqatan o'chirasizmi?")) return;
+      try {
+        await apiFetch(`/api/teacher/tasks/${taskId}`, { method: 'DELETE' });
+        toast("O'chirildi", 'success');
+        if (currentDetailProjectId) loadProjectDetail(currentDetailProjectId);
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
     // AI VAZIFA MODAL LOGIC
     function openAiAssign(projectId, groupId) {
       document.getElementById('ai-project-id').value = projectId;
@@ -682,7 +738,7 @@
             '<div style="display:flex;flex-wrap:wrap;gap:0.4rem">' +
             students.map((s, i) => `
               <span style="display:inline-flex;align-items:center;gap:0.35rem;background:var(--primary-light);color:var(--primary);border-radius:20px;padding:0.25rem 0.7rem;font-size:0.82rem;font-weight:600">
-                <span style="background:var(--primary);color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem">${i+1}</span>
+                <span style="background:var(--primary);color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem">${i + 1}</span>
                 ${s.full_name}
               </span>`).join('') +
             '</div>';

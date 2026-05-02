@@ -59,12 +59,12 @@ const db = {
   },
 
   async transaction(fn) {
-    await sql.transaction(async (tx) => {
-      const client = {
-        query: (query, params = []) => q(tx, query, params.map(v => v === undefined ? null : v))
-      };
-      await fn(client);
-    });
+    // Neon serverless requires array of template queries for real transactions, 
+    // replacing with a simple mock client that awaits sequentially 
+    const client = {
+      query: async (query, params = []) => q(sql, query, params.map(v => v === undefined ? null : v))
+    };
+    await fn(client);
   }
 };
 

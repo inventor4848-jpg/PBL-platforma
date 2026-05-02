@@ -86,12 +86,32 @@ module.exports = function (db) {
   router.post('/projects/:id/tasks', async (req, res) => {
     try {
       const { student_id, title, description } = req.body;
-      const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', req.params.id, req.user.id);
+      const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
       if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!student_id || !title) return res.status(400).json({ error: 'Talaba va sarlavha kerak' });
       const r = await db.run('INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?)',
-        req.params.id, student_id, title, description || null);
+        parseInt(req.params.id), student_id, title, description || null);
       res.json({ id: r.lastInsertRowid });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.put('/tasks/:id', async (req, res) => {
+    try {
+      const { title, description, deadline } = req.body;
+      const task = await db.get('SELECT pt.* FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE pt.id=? AND p.teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
+      if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
+      if (!title) return res.status(400).json({ error: 'Sarlavha kiritilmagan' });
+      await db.run('UPDATE project_tasks SET title=?, description=?, deadline=? WHERE id=?', title, description || null, deadline || null, parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.delete('/tasks/:id', async (req, res) => {
+    try {
+      const task = await db.get('SELECT pt.* FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE pt.id=? AND p.teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
+      if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
+      await db.run('DELETE FROM project_tasks WHERE id=?', parseInt(req.params.id));
+      res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 

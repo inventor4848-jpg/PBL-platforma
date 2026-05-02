@@ -1,13 +1,9 @@
 const express = require('express');
 const { authMiddleware, requireRole } = require('../middleware/auth');
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const uploadDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../../uploads');
-if (!process.env.VERCEL && !fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const upload = multer({ dest: uploadDir, limits: { fileSize: 20 * 1024 * 1024 } });
+// Note: Removed multer completely to avoid Vercel serverless request body conflicts
 
 module.exports = function (db) {
   const router = express.Router();
@@ -26,7 +22,7 @@ module.exports = function (db) {
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
-  router.post('/tasks/:taskId/submit', upload.single('file'), async (req, res) => {
+  router.post('/tasks/:taskId/submit', async (req, res) => {
     try {
       const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', req.params.taskId, req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
@@ -36,13 +32,12 @@ module.exports = function (db) {
       let originalFilename = task.original_filename;
       let fileData = task.file_data;
 
-      if (req.file) {
-        filePath = req.file.filename;
-        originalFilename = req.file.originalname;
-        // Read file content and store as base64 in DB (persists across server restarts)
-        fileData = fs.readFileSync(req.file.path).toString('base64');
-        // Clean up local temp file
-        try { fs.unlinkSync(req.file.path); } catch (_) {}
+      // Ensure req.body has the data
+      if (req.body.file_data && req.body.original_filename) {
+        originalFilename = req.body.original_filename;
+        fileData = req.body.file_data;
+        // In browser upload, we won't need a static file_path, but keeping convention
+        filePath = 'db_' + Date.now() + '_' + originalFilename;
       }
 
       await db.run(
