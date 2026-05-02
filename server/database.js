@@ -138,6 +138,30 @@ async function ensureInit() {
   try {
     await sql`SELECT 1`;
 
+    // Check if schema is correct (password column must exist)
+    const schemaOk = await sql`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_name='users' AND column_name='password'
+    `;
+
+    if (!schemaOk.length) {
+      // Drop all tables and recreate with correct schema
+      const drops = [
+        'DROP TABLE IF EXISTS chat_messages',
+        'DROP TABLE IF EXISTS project_tasks',
+        'DROP TABLE IF EXISTS projects',
+        'DROP TABLE IF EXISTS users',
+        'DROP TABLE IF EXISTS groups',
+        'DROP TABLE IF EXISTS departments',
+        'DROP TABLE IF EXISTS faculties',
+      ];
+      for (const d of drops) {
+        const parts = [d];
+        Object.assign(parts, { raw: [d] });
+        try { await sql(parts); } catch {}
+      }
+    }
+
     for (const stmt of SCHEMA) {
       const parts = [stmt];
       Object.assign(parts, { raw: [stmt] });
