@@ -11,27 +11,25 @@ if (!connectionString) {
   console.error('XATO: DATABASE_URL topilmadi!');
 }
 
-const sql = neon(connectionString || 'postgresql://localhost/pbl');
+const sql = neon(connectionString || '');
 
-function toPostgres(query) {
-  let i = 0;
-  return query.replace(/\?/g, () => '$' + (++i));
+// Convert "?" placeholders to tagged template call
+function q(sqlFn, query, params) {
+  const parts = query.split('?');
+  Object.assign(parts, { raw: [...parts] });
+  return sqlFn(parts, ...params);
 }
 
-function flatArgs(args) {
+function norm(args) {
   if (!args || !args.length) return [];
-  if (args.length === 1 && Array.isArray(args[0])) return args[0].map(n);
-  return args.map(n);
-}
-
-function n(v) {
-  return v === undefined ? null : v;
+  if (args.length === 1 && Array.isArray(args[0])) return args[0].map(v => v === undefined ? null : v);
+  return args.map(v => v === undefined ? null : v);
 }
 
 const db = {
   async get(query, ...args) {
     try {
-      const rows = await sql.unsafe(toPostgres(query), flatArgs(args));
+      const rows = await q(sql, query, norm(args));
       return rows[0] || null;
     } catch (e) {
       console.error('db.get error:', e.message, '| SQL:', query);
@@ -41,7 +39,7 @@ const db = {
 
   async all(query, ...args) {
     try {
-      return await sql.unsafe(toPostgres(query), flatArgs(args));
+      return await q(sql, query, norm(args));
     } catch (e) {
       console.error('db.all error:', e.message, '| SQL:', query);
       throw e;
@@ -51,8 +49,8 @@ const db = {
   async run(query, ...args) {
     try {
       const isInsert = query.trim().toUpperCase().startsWith('INSERT');
-      const pgQuery = toPostgres(query) + (isInsert ? ' RETURNING id' : '');
-      const rows = await sql.unsafe(pgQuery, flatArgs(args));
+      const fullQuery = isInsert ? query + ' RETURNING id' : query;
+      const rows = await q(sql, fullQuery, norm(args));
       return { lastInsertRowid: rows[0]?.id || 0 };
     } catch (e) {
       console.error('db.run error:', e.message, '| SQL:', query);
@@ -63,7 +61,7 @@ const db = {
   async transaction(fn) {
     await sql.transaction(async (tx) => {
       const client = {
-        query: (q, params) => tx.unsafe(q, params || [])
+        query: (query, params = []) => q(tx, query, params.map(v => v === undefined ? null : v))
       };
       await fn(client);
     });
@@ -138,10 +136,12 @@ let _initialized = false;
 async function ensureInit() {
   if (_initialized) return;
   try {
-    await sql.unsafe('SELECT 1');
+    await sql`SELECT 1`;
 
     for (const stmt of SCHEMA) {
-      try { await sql.unsafe(stmt); } catch {}
+      const parts = [stmt];
+      Object.assign(parts, { raw: [stmt] });
+      try { await sql(parts); } catch {}
     }
 
     const admin = await db.get('SELECT id FROM users WHERE username = ?', '123123*');

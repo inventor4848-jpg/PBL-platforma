@@ -88,7 +88,7 @@ module.exports = function (db) {
         for (let i = 0; i < students.length; i++) {
           const task = tasks[i % tasks.length];
           await client.query(
-            'INSERT INTO project_tasks (project_id, student_id, title, description) VALUES ($1,$2,$3,$4)',
+            'INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?)',
             [req.params.id, students[i].id, task.title, task.description || null]
           );
         }
