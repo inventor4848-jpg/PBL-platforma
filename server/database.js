@@ -75,30 +75,7 @@ async function ensureInit() {
   try {
     await sql`SELECT 1`;
 
-    // Check if users table AND all required columns exist
-    const usersOk = await sql`
-      SELECT 1 FROM information_schema.columns
-      WHERE table_name = 'users' AND column_name = 'password'
-    `;
-
-    const allTablesOk = await sql`
-      SELECT COUNT(*) as cnt FROM information_schema.tables
-      WHERE table_schema = 'public'
-        AND table_name IN ('users','faculties','departments','groups','projects','project_tasks','chat_messages')
-    `;
-
-    const tableCount = parseInt(allTablesOk[0]?.cnt || '0');
-
-    if (!usersOk.length || tableCount < 7) {
-      // Drop all tables in correct dependency order with CASCADE to avoid FK errors
-      await sql`DROP TABLE IF EXISTS chat_messages CASCADE`;
-      await sql`DROP TABLE IF EXISTS project_tasks CASCADE`;
-      await sql`DROP TABLE IF EXISTS projects CASCADE`;
-      await sql`DROP TABLE IF EXISTS users CASCADE`;
-      await sql`DROP TABLE IF EXISTS groups CASCADE`;
-      await sql`DROP TABLE IF EXISTS departments CASCADE`;
-      await sql`DROP TABLE IF EXISTS faculties CASCADE`;
-    }
+    // Tables are created with IF NOT EXISTS — no dropping, data is always preserved
 
     // Create tables (IF NOT EXISTS is safe to run every time)
     await sql`CREATE TABLE IF NOT EXISTS faculties (
