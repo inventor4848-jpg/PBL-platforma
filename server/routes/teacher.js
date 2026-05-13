@@ -112,6 +112,32 @@ module.exports = function (db) {
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
+  // O'qituvchi vazifaga fayl biriktiradi
+  router.put('/tasks/:id/upload-file', async (req, res) => {
+    try {
+      const { file_data, original_filename } = req.body;
+      if (!file_data || !original_filename) return res.status(400).json({ error: 'Fayl kerak' });
+      const task = await db.get('SELECT pt.* FROM project_tasks pt JOIN projects p ON pt.project_id=p.id WHERE pt.id=? AND p.teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
+      if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
+      await db.run('UPDATE project_tasks SET teacher_file_data=?, teacher_filename=? WHERE id=?', file_data, original_filename, parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  // O'qituvchi faylini talaba yuklab oladi
+  router.get('/tasks/:taskId/teacher-file', async (req, res) => {
+    try {
+      const task = await db.get('SELECT * FROM project_tasks WHERE id=?', req.params.taskId);
+      if (!task) return res.status(404).json({ error: 'Topilmadi' });
+      if (!task.teacher_file_data) return res.status(404).json({ error: "O'qituvchi fayl yuklamagan" });
+      const buf = Buffer.from(task.teacher_file_data, 'base64');
+      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(task.teacher_filename || 'vazifa_fayl')}`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Length', buf.length);
+      return res.end(buf);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
   router.put('/tasks/:id', async (req, res) => {
     try {
       const { title, description, deadline } = req.body;
@@ -226,15 +252,15 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
       if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!assignments || !assignments.length) return res.status(400).json({ error: 'Vazifalar kerak' });
 
-      await db.transaction(async (client) => {
-        for (const a of assignments) {
-          await client.query(
-            'INSERT INTO project_tasks (project_id, student_id, title, description, deadline) VALUES (?,?,?,?,?)',
-            [parseInt(req.params.id), a.student_id, a.title, a.description || null, deadline || null]
-          );
-        }
-      });
-      res.json({ success: true, assigned: assignments.length });
+      const task_ids = [];
+      for (const a of assignments) {
+        const r = await db.run(
+          'INSERT INTO project_tasks (project_id, student_id, title, description, deadline) VALUES (?,?,?,?,?)',
+          parseInt(req.params.id), a.student_id, a.title, a.description || null, deadline || null
+        );
+        task_ids.push(r.lastInsertRowid);
+      }
+      res.json({ success: true, assigned: assignments.length, task_ids });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 

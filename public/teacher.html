@@ -283,11 +283,11 @@
   <div class="modal-overlay" id="modal-task">
     <div class="modal">
       <div class="modal-header">
-        <div class="modal-title">Vazifa qo'shish</div>
+        <div class="modal-title" id="task-modal-title">Vazifa qo'shish</div>
         <button class="modal-close" onclick="closeModal('modal-task')">✕</button>
       </div>
       <input type="hidden" id="task-project-id">
-      <div class="form-group">
+      <div class="form-group" id="task-student-row">
         <label>Talaba</label>
         <select class="form-control" id="task-student"></select>
       </div>
@@ -297,11 +297,20 @@
       </div>
       <div class="form-group">
         <label>Tavsif</label>
-        <textarea class="form-control" id="task-desc" rows="3"></textarea>
+        <textarea class="form-control" id="task-desc" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Muddat</label>
+        <input type="date" class="form-control" id="task-deadline">
+      </div>
+      <div class="form-group" id="task-file-row">
+        <label>📎 Vazifa fayli (ixtiyoriy) <small style="color:var(--gray)">.pdf .doc .docx .zip formatlar</small></label>
+        <input type="file" class="form-control" id="task-file" accept=".pdf,.doc,.docx,.zip,.rar,.txt">
+        <div id="task-file-info" style="font-size:0.8rem;color:var(--gray);margin-top:0.3rem"></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-gray btn-sm" onclick="closeModal('modal-task')">Bekor</button>
-        <button class="btn btn-primary btn-sm" onclick="saveTask()">Saqlash</button>
+        <button class="btn btn-primary btn-sm" id="task-save-btn" onclick="saveTask()">Saqlash</button>
       </div>
     </div>
   </div>
@@ -337,20 +346,21 @@
       <div id="ai-setup-section">
         <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.2rem;flex-wrap:wrap">
           <div>
-            <label
-              style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">TOPSHIRISH
-              MUDDATI</label>
+            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">TOPSHIRISH MUDDATI</label>
             <input type="date" class="form-control" id="ai-deadline" style="width:180px">
           </div>
           <div style="flex:1;min-width:200px">
-            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">GURUH
-              A'ZOLARI</label>
+            <label style="font-size:0.82rem;font-weight:600;color:var(--gray);display:block;margin-bottom:0.3rem">GURUH A'ZOLARI</label>
             <div id="ai-students-list"></div>
           </div>
         </div>
+        <div class="form-group">
+          <label>📎 Vazifa fayli (ixtiyoriy) <small style="color:var(--gray)">.pdf .doc .docx .zip</small></label>
+          <input type="file" class="form-control" id="ai-task-file" accept=".pdf,.doc,.docx,.zip,.rar,.txt">
+          <div id="ai-file-info" style="font-size:0.8rem;color:var(--gray);margin-top:0.3rem"></div>
+        </div>
         <div style="text-align:center;padding:0.5rem 0 0.2rem">
-          <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:220px"
-            disabled>
+          <button class="btn btn-primary" id="ai-generate-btn" onclick="aiGenerateTasks()" style="min-width:220px" disabled>
             ✨ AI bilan vazifa yaratish
           </button>
         </div>
@@ -515,8 +525,7 @@
         </div>
         <div style="display:flex;gap:0.5rem">
           <button class="btn btn-accent btn-sm" onclick="openAiAssign(${project.id},${project.group_id || 0})">✨ AI Vazifa</button>
-          <button class="btn btn-info btn-sm" onclick="openAssignAll(${project.id})">📤 Taqsimlash</button>
-          <button class="btn btn-primary btn-sm" onclick="openAddTask(${project.id},${project.group_id || 0})">+ Qoshish</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddTask(${project.id},${project.group_id || 0})">+ Qo'shish</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
@@ -570,12 +579,17 @@
 
     async function openAddTask(projectId, groupId) {
       document.getElementById('task-project-id').value = projectId;
+      document.getElementById('task-modal-title').textContent = "Vazifa qo'shish";
       document.getElementById('task-title').value = '';
       document.getElementById('task-desc').value = '';
+      document.getElementById('task-deadline').value = '';
+      document.getElementById('task-file').value = '';
+      document.getElementById('task-file-info').textContent = '';
+      document.getElementById('task-student-row').classList.remove('hidden');
+      document.getElementById('task-student').disabled = false;
+      window._editTaskId = null;
       let students = [];
-      if (groupId) {
-        students = await apiFetch(`/api/teacher/groups/${groupId}/students`);
-      }
+      if (groupId) students = await apiFetch(`/api/teacher/groups/${groupId}/students`);
       document.getElementById('task-student').innerHTML = students.length ?
         students.map(s => `<option value="${s.id}">${s.full_name}</option>`).join('') :
         '<option value="">Talabalar yo\'q</option>';
@@ -653,43 +667,68 @@
 
     function editTask(taskId, title, desc, deadline) {
       document.getElementById('task-project-id').value = '';
+      document.getElementById('task-student-row').classList.add('hidden');
       document.getElementById('task-student').innerHTML = `<option value="edit">-- Tahrirlash rejimida --</option>`;
-      document.getElementById('task-student').disabled = true;
+      document.getElementById('task-modal-title').textContent = 'Vazifani tahrirlash';
       document.getElementById('task-title').value = title;
       document.getElementById('task-desc').value = desc;
-      // if modal doesn't have a deadline field, we can add it, wait modal-task has no deadline field!
-      // But we will pass it anyway
+      document.getElementById('task-deadline').value = deadline || '';
+      document.getElementById('task-file').value = '';
+      document.getElementById('task-file-info').textContent = 'Yangi fayl tanlang (mavjud faylni almashtirish uchun)';
       window._editTaskId = taskId;
-      window._editTaskDeadline = deadline;
       openModal('modal-task');
     }
 
     async function saveTask() {
       const title = document.getElementById('task-title').value.trim();
       const description = document.getElementById('task-desc').value.trim();
+      const deadline = document.getElementById('task-deadline').value || null;
       if (!title) return toast('Sarlavha kiritilmagan', 'error');
+      const btn = document.getElementById('task-save-btn');
+      btn.disabled = true; btn.textContent = 'Saqlanmoqda...';
 
-      if (window._editTaskId) { // Edit mode
+      // Read file if selected
+      const fileInput = document.getElementById('task-file');
+      const file = fileInput.files[0];
+      let file_data = null, teacher_filename = null;
+      if (file) {
+        teacher_filename = file.name;
+        file_data = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = () => reject(new Error('Faylni o\'qib bo\'lmadi'));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      if (window._editTaskId) {
         try {
-          await apiFetch(`/api/teacher/tasks/${window._editTaskId}`, { method: 'PUT', body: JSON.stringify({ title, description, deadline: window._editTaskDeadline || null }) });
-          toast("Tahrirlandi!", 'success');
+          await apiFetch(`/api/teacher/tasks/${window._editTaskId}`, { method: 'PUT', body: JSON.stringify({ title, description, deadline }) });
+          if (file_data) {
+            await apiFetch(`/api/teacher/tasks/${window._editTaskId}/upload-file`, { method: 'PUT', body: JSON.stringify({ file_data, original_filename: teacher_filename }) });
+          }
+          toast('Tahrirlandi!', 'success');
           closeModal('modal-task');
           window._editTaskId = null;
           if (currentDetailProjectId) loadProjectDetail(currentDetailProjectId);
         } catch (e) { toast(e.message, 'error'); }
+        btn.disabled = false; btn.textContent = 'Saqlash';
         return;
       }
 
-      // Add mode
       const projectId = document.getElementById('task-project-id').value;
       const student_id = document.getElementById('task-student').value;
-      if (!student_id || !title) return toast('Talaba va sarlavha kerak', 'error');
+      if (!student_id || !title) { btn.disabled = false; btn.textContent = 'Saqlash'; return toast('Talaba va sarlavha kerak', 'error'); }
       try {
-        await apiFetch(`/api/teacher/projects/${projectId}/tasks`, { method: 'POST', body: JSON.stringify({ student_id, title, description }) });
+        const r = await apiFetch(`/api/teacher/projects/${projectId}/tasks`, { method: 'POST', body: JSON.stringify({ student_id, title, description }) });
+        if (file_data && r.id) {
+          await apiFetch(`/api/teacher/tasks/${r.id}/upload-file`, { method: 'PUT', body: JSON.stringify({ file_data, original_filename: teacher_filename }) });
+        }
         toast('Vazifa qo\'shildi!', 'success');
         closeModal('modal-task');
         loadProjectDetail(projectId);
       } catch (e) { toast(e.message, 'error'); }
+      btn.disabled = false; btn.textContent = 'Saqlash';
     }
 
     async function deleteTask(taskId) {
@@ -806,10 +845,30 @@
     async function aiConfirmTasks() {
       if (!aiCurrentAssignments || !aiCurrentProjectId) return;
       const deadline = document.getElementById('ai-deadline').value || null;
+      
+      // Read teacher file if selected
+      const aiFile = document.getElementById('ai-task-file').files[0];
+      let ai_file_data = null, ai_filename = null;
+      if (aiFile) {
+        ai_filename = aiFile.name;
+        ai_file_data = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = () => reject(new Error('Faylni o\'qib bo\'lmadi'));
+          reader.readAsDataURL(aiFile);
+        });
+      }
+
       try {
         const r = await apiFetch(`/api/teacher/projects/${aiCurrentProjectId}/ai-assign-confirm`, {
           method: 'POST', body: JSON.stringify({ assignments: aiCurrentAssignments, deadline })
         });
+        // Upload file to each created task if file selected
+        if (ai_file_data && r.task_ids && r.task_ids.length) {
+          await Promise.all(r.task_ids.map(tid =>
+            apiFetch(`/api/teacher/tasks/${tid}/upload-file`, { method: 'PUT', body: JSON.stringify({ file_data: ai_file_data, original_filename: ai_filename }) })
+          ));
+        }
         toast(`✅ ${r.assigned} ta talabaga vazifa berildi!`, 'success');
         const prevId = aiCurrentProjectId;
         aiCurrentAssignments = null;

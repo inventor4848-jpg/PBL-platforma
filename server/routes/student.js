@@ -9,12 +9,26 @@ module.exports = function (db) {
     try {
       res.json(await db.all(`
         SELECT pt.*, p.title as project_title, p.deadline, p.description as project_desc,
-          u.full_name as teacher_name
+          u.full_name as teacher_name, pt.teacher_filename
         FROM project_tasks pt
         JOIN projects p ON pt.project_id=p.id
         JOIN users u ON p.teacher_id=u.id
         WHERE pt.student_id=? ORDER BY pt.created_at DESC
       `, req.user.id));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
+  // O'qituvchi faylini talaba yuklab oladi
+  router.get('/tasks/:taskId/teacher-file', async (req, res) => {
+    try {
+      const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', req.params.taskId, req.user.id);
+      if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
+      if (!task.teacher_file_data) return res.status(404).json({ error: "O'qituvchi fayl yuklamagan" });
+      const buf = Buffer.from(task.teacher_file_data, 'base64');
+      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(task.teacher_filename || 'vazifa_fayl')}`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Length', buf.length);
+      return res.end(buf);
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 

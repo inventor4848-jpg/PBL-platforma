@@ -298,6 +298,13 @@
         📅 Muddat: ${formatDate(t.deadline) || 'Muddatsiz'}
       </div>
       ${t.description ? `<p style="font-size:0.85rem;color:var(--gray);margin-bottom:0.8rem">${t.description}</p>` : ''}
+      ${t.teacher_filename ? `
+      <div style="background:#f0f4ff;border:1px solid #c5beff;border-radius:8px;padding:0.6rem 1rem;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem">
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:600;color:var(--primary)">
+          📎 <span>${t.teacher_filename}</span>
+        </div>
+        <button class="btn btn-info btn-sm" onclick="downloadTeacherFile(${t.id},'${t.teacher_filename.replace(/'/g,"\\'")}')">Yuklab olish</button>
+      </div>` : ''}
       <div class="task-footer">
         <div style="display:flex;align-items:center;gap:1rem">
           ${t.grade ? `
@@ -311,8 +318,7 @@
         ${t.status !== 'graded' ? `
           <button class="btn btn-primary btn-sm" onclick="openSubmit(${t.id})">
             ${t.status === 'submitted' ? '🔄 Qayta topshirish' : '📤 Topshirish'}
-          </button>` :
-          (t.file_path ? `<a href="/uploads/${t.file_path}" target="_blank" class="btn btn-info btn-sm">📄 Fayl</a>` : '')}
+          </button>` : ''}
       </div>
     </div>`).join('');
     }
@@ -321,6 +327,23 @@
       document.getElementById('submit-task-id').value = taskId;
       document.getElementById('submit-file').value = '';
       openModal('modal-submit');
+    }
+
+    async function downloadTeacherFile(taskId, filename) {
+      try {
+        toast('Fayl yuklanmoqda...', 'info');
+        const res = await fetch(`/api/student/tasks/${taskId}/teacher-file`, {
+          headers: { 'Authorization': 'Bearer ' + getToken() }
+        });
+        if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Fayl topilmadi'); }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none'; a.href = url;
+        a.download = filename || 'vazifa_fayl';
+        document.body.appendChild(a); a.click();
+        window.URL.revokeObjectURL(url); document.body.removeChild(a);
+      } catch (e) { toast(e.message, 'error'); }
     }
 
     async function submitTask() {
