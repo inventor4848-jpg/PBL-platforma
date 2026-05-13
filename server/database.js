@@ -167,6 +167,12 @@ async function ensureInit() {
     await sql`ALTER TABLE project_tasks ADD COLUMN IF NOT EXISTS original_filename TEXT`;
     await sql`ALTER TABLE project_tasks ADD COLUMN IF NOT EXISTS file_data TEXT`;
     await sql`ALTER TABLE project_tasks ADD COLUMN IF NOT EXISTS deadline DATE`;
+    
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS faculty_id INTEGER`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS department_id INTEGER`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS group_id INTEGER`;
+    await sql`ALTER TABLE departments ADD COLUMN IF NOT EXISTS faculty_id INTEGER`;
+    await sql`ALTER TABLE groups ADD COLUMN IF NOT EXISTS department_id INTEGER`;
 
     await sql`CREATE TABLE IF NOT EXISTS chat_messages (
       id SERIAL PRIMARY KEY,
