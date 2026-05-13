@@ -13,17 +13,21 @@ module.exports = function (db) {
       const password = req.body.password?.trim();
       if (!username || !password) return res.status(400).json({ error: 'Login va parol kerak' });
 
-      const user = await db.get('SELECT * FROM users WHERE username = ?', username);
+      // Case-insensitive lookup and trim
+      const user = await db.get('SELECT * FROM users WHERE LOWER(TRIM(username)) = LOWER(TRIM(?))', username);
+      
       if (!user) {
-        console.warn(`Login failed: User not found [${username}]`);
+        console.warn(`AUTH FAILURE: User [${username}] not found in database.`);
         return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
       }
 
       const valid = bcrypt.compareSync(password, user.password);
       if (!valid) {
-        console.warn(`Login failed: Wrong password for [${username}]`);
+        console.warn(`AUTH FAILURE: Invalid password for [${username}]. Hash in DB starts with: ${user.password.substring(0, 10)}...`);
         return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
       }
+
+      console.log(`AUTH SUCCESS: User [${username}] logged in.`);
 
       const token = jwt.sign(
         { id: user.id, username: user.username, role: user.role, full_name: user.full_name },

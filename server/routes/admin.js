@@ -123,7 +123,9 @@ module.exports = function (db) {
   });
   router.post('/users', async (req, res) => {
     try {
-      const { username, password, full_name, role, group_id, department_id, faculty_id } = req.body;
+      const username = req.body.username?.trim();
+      const full_name = req.body.full_name?.trim();
+      const { password, role, group_id, department_id, faculty_id } = req.body;
       if (!username || !password || !full_name || !role) return res.status(400).json({ error: 'Barcha maydonlar kerak' });
       const existing = await db.get('SELECT id FROM users WHERE username=?', username);
       if (existing) return res.status(400).json({ error: 'Bu login allaqachon mavjud' });
@@ -137,7 +139,8 @@ module.exports = function (db) {
   });
   router.put('/users/:id', async (req, res) => {
     try {
-      const { full_name, password, group_id, department_id, faculty_id } = req.body;
+      const full_name = req.body.full_name?.trim();
+      const { password, group_id, department_id, faculty_id } = req.body;
       if (password) {
         const hash = bcrypt.hashSync(password, 10);
         await db.run('UPDATE users SET full_name=?, password=?, group_id=?, department_id=?, faculty_id=? WHERE id=?',
