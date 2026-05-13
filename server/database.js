@@ -161,15 +161,18 @@ async function ensureInit() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`;
 
-    // Create admin if not exists
+    // Create or Update admin to ensure login works
+    const hash = bcrypt.hashSync('123123*', 10);
     const admin = await db.get('SELECT id FROM users WHERE username = ?', '123123*');
     if (!admin) {
-      const hash = bcrypt.hashSync('123123*', 10);
       await db.run(
         'INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)',
         '123123*', hash, 'Administrator', 'admin'
       );
       console.log('Admin yaratildi.');
+    } else {
+      // Force reset password for admin to ensure login works
+      await db.run('UPDATE users SET password = ? WHERE id = ?', hash, admin.id);
     }
 
     _initialized = true;
