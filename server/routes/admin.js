@@ -56,7 +56,7 @@ module.exports = function (db) {
   // Departments
   router.get('/departments', async (req, res) => {
     try {
-      res.json(await db.all('SELECT d.*, f.name as faculty_name FROM departments d JOIN faculties f ON d.faculty_id=f.id ORDER BY d.name'));
+      res.json(await db.all('SELECT d.*, f.name as faculty_name FROM departments d LEFT JOIN faculties f ON d.faculty_id=f.id ORDER BY d.name'));
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
   router.post('/departments', async (req, res) => {
@@ -83,7 +83,7 @@ module.exports = function (db) {
   // Groups
   router.get('/groups', async (req, res) => {
     try {
-      res.json(await db.all('SELECT g.*, d.name as department_name, f.name as faculty_name FROM groups g JOIN departments d ON g.department_id=d.id JOIN faculties f ON d.faculty_id=f.id ORDER BY g.name'));
+      res.json(await db.all('SELECT g.*, d.name as department_name, f.name as faculty_name FROM groups g LEFT JOIN departments d ON g.department_id=d.id LEFT JOIN faculties f ON d.faculty_id=f.id ORDER BY g.name'));
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
   router.post('/groups', async (req, res) => {
