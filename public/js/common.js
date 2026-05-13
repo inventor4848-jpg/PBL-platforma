@@ -7,7 +7,7 @@ async function apiFetch(url, opts = {}) {
   const token = getToken();
   const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...opts.headers };
   const res = await fetch(API + url, { ...opts, headers });
-  if (res.status === 401) {
+  if (res.status === 401 && !url.includes('/login')) {
     logout();
     throw new Error('Sessiya tugadi, qayta kiring');
   }
