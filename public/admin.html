@@ -497,8 +497,8 @@
       <td><strong>${f.name}</strong></td>
       <td>${formatDate(f.created_at)}</td>
       <td>
-        <button class="btn btn-sm btn-info" onclick="editFaculty(${f.id},'${f.name.replace(/'/g, "\\'")}')">✏️</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteFaculty(${f.id})">🗑️</button>
+        <button class="btn btn-sm btn-info" onclick="editFaculty(${f.id},'${f.name.replace(/'/g, "\\'")}')">Tahrirlash</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteFaculty(${f.id})">O'chirish</button>
       </td>
     </tr>`).join('') : '<tr><td colspan="4" class="empty-state"><div>Hozircha ma\'lumot yo\'q</div></td></tr>';
     }
@@ -512,8 +512,8 @@
       <td><span class="badge badge-primary">${d.faculty_name}</span></td>
       <td>${formatDate(d.created_at)}</td>
       <td>
-        <button class="btn btn-sm btn-info" onclick="editDept(${d.id},'${d.name.replace(/'/g, "\\'")}',${d.faculty_id})">✏️</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteDept(${d.id})">🗑️</button>
+        <button class="btn btn-sm btn-info" onclick="editDept(${d.id},'${d.name.replace(/'/g, "\\'")}',${d.faculty_id})">Tahrirlash</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDept(${d.id})">O'chirish</button>
       </td>
     </tr>`).join('') : '<tr><td colspan="5"><div class="empty-state"><div class="icon">🏢</div><h3>Kafedra yo\'q</h3></div></td></tr>';
     }
@@ -528,8 +528,8 @@
       <td><span class="badge badge-info">${g.faculty_name}</span></td>
       <td>${formatDate(g.created_at)}</td>
       <td>
-        <button class="btn btn-sm btn-info" onclick="editGroup(${g.id},'${g.name.replace(/'/g, "\\'")}',${g.department_id})">✏️</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteGroup(${g.id})">🗑️</button>
+        <button class="btn btn-sm btn-info" onclick="editGroup(${g.id},'${g.name.replace(/'/g, "\\'")}',${g.department_id})">Tahrirlash</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGroup(${g.id})">O'chirish</button>
       </td>
     </tr>`).join('') : '<tr><td colspan="6"><div class="empty-state"><p>Guruh yo\'q</p></div></td></tr>';
     }
@@ -658,8 +658,8 @@
         <td>${u.department_name || '—'}</td>
         <td>${formatDate(u.created_at)}</td>
         <td>
-          <button class="btn btn-sm btn-info" onclick="editUser(${u.id})">✏️</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">🗑️</button>
+          <button class="btn btn-sm btn-info" onclick="editUser(${u.id})">Tahrirlash</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">O'chirish</button>
         </td>
       </tr>`).join('') :
         '<tr><td colspan="6"><div class="empty-state"><div class="icon">👨‍🏫</div><h3>O\'qituvchi yo\'q</h3></div></td></tr>';
@@ -673,8 +673,8 @@
         <td>${u.group_name || '—'}</td>
         <td>${formatDate(u.created_at)}</td>
         <td>
-          <button class="btn btn-sm btn-info" onclick="editUser(${u.id})">✏️</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">🗑️</button>
+          <button class="btn btn-sm btn-info" onclick="editUser(${u.id})">Tahrirlash</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">O'chirish</button>
         </td>
       </tr>`).join('') :
         '<tr><td colspan="6"><div class="empty-state"><div class="icon">🎓</div><h3>Talaba yo\'q</h3></div></td></tr>';
