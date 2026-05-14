@@ -22,12 +22,28 @@ module.exports = function (db) {
   // O'qituvchi faylini talaba yuklab oladi
   router.get('/tasks/:taskId/teacher-file', async (req, res) => {
     try {
-      const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', req.params.taskId, req.user.id);
+      const task = await db.get('SELECT * FROM project_tasks WHERE id=? AND student_id=?', parseInt(req.params.taskId), req.user.id);
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!task.teacher_file_data) return res.status(404).json({ error: "O'qituvchi fayl yuklamagan" });
-      const buf = Buffer.from(task.teacher_file_data, 'base64');
-      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(task.teacher_filename || 'vazifa_fayl')}`);
-      res.setHeader('Content-Type', 'application/octet-stream');
+
+      const cleanBase64 = task.teacher_file_data.replace(/^data:.*?;base64,/, '');
+      const buf = Buffer.from(cleanBase64, 'base64');
+      const filename = task.teacher_filename || 'vazifa_fayl';
+
+      const ext = filename.split('.').pop().toLowerCase();
+      const mimeTypes = {
+        'pdf': 'application/pdf',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'doc': 'application/msword',
+        'zip': 'application/zip',
+        'rar': 'application/x-rar-compressed',
+        'txt': 'text/plain',
+        'jpg': 'image/jpeg',
+        'png': 'image/png'
+      };
+
+      res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`);
+      res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
       res.setHeader('Content-Length', buf.length);
       return res.end(buf);
     } catch (e) { res.status(500).json({ error: e.message }); }
