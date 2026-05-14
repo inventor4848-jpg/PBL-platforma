@@ -8,8 +8,9 @@ module.exports = function (db) {
   router.get('/tasks', async (req, res) => {
     try {
       res.json(await db.all(`
-        SELECT pt.*, p.title as project_title, p.deadline, p.description as project_desc,
-          u.full_name as teacher_name, pt.teacher_filename
+        SELECT pt.id, pt.project_id, pt.student_id, pt.title, pt.description, pt.status, pt.grade, pt.feedback, pt.original_filename, pt.deadline, pt.submitted_at, pt.graded_at, pt.created_at, p.title as project_title, p.deadline as project_deadline, p.description as project_desc,
+          u.full_name as teacher_name, pt.teacher_filename,
+          (pt.file_data IS NOT NULL OR pt.file_path IS NOT NULL) as has_file
         FROM project_tasks pt
         JOIN projects p ON pt.project_id=p.id
         JOIN users u ON p.teacher_id=u.id
