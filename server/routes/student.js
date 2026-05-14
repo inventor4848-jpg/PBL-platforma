@@ -56,9 +56,9 @@ module.exports = function (db) {
       if (task.status === 'graded') return res.status(400).json({ error: 'Baholangan vazifa qayta topshirilmaydi' });
 
       const { file_data, original_filename } = req.body || {};
-      const newFileData = file_data || task.file_data;
+      const newFileData = (file_data !== null && file_data !== undefined) ? file_data : task.file_data;
       const newOriginalFilename = original_filename || task.original_filename;
-      const newFilePath = file_data ? ('db_' + Date.now() + '_' + (original_filename || 'vazifa')) : task.file_path;
+      const newFilePath = (file_data !== null && file_data !== undefined) ? ('db_' + Date.now() + '_' + (original_filename || 'vazifa')) : task.file_path;
 
       if (file_data === undefined) return res.status(400).json({ error: "Fayl ma'lumotlari yuborilmadi" });
 

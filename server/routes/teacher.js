@@ -87,7 +87,7 @@ module.exports = function (db) {
       const [tasks, leaderboard] = await Promise.all([
         db.all(`
           SELECT pt.id, pt.project_id, pt.student_id, pt.title, pt.description, pt.status, pt.grade, pt.feedback, pt.file_path, pt.original_filename, pt.deadline, pt.submitted_at, pt.graded_at, pt.created_at,
-            (pt.file_data IS NOT NULL AND LENGTH(pt.file_data) > 0 OR pt.file_path IS NOT NULL) as has_file,
+            (pt.file_data IS NOT NULL OR pt.file_path IS NOT NULL) as has_file,
             pt.teacher_filename,
             (pt.teacher_file_data IS NOT NULL) as has_teacher_file,
             u.full_name as student_name
