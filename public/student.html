@@ -362,10 +362,8 @@
             const reader = new FileReader();
             reader.onload = () => {
               if (!reader.result) return reject(new Error('Fayl bo\'sh yoki o\'qib bo\'lmadi'));
-              const parts = reader.result.split(',');
-              const b64 = parts.length > 1 ? parts[1] : parts[0];
-              console.log('File read success, length:', b64.length);
-              resolve(b64);
+              console.log('File read success, length:', reader.result.length);
+              resolve(reader.result);
             };
             reader.onerror = () => reject(new Error('Faylni o\'qib bo\'lmadi'));
             reader.readAsDataURL(file);
