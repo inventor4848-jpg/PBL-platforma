@@ -112,9 +112,9 @@ module.exports = function (db) {
       const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
       if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!student_id || !title) return res.status(400).json({ error: 'Talaba va sarlavha kerak' });
-      const r = await db.run('INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?)',
+      const r = await db.get('INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?) RETURNING id',
         parseInt(req.params.id), student_id, title, description || null);
-      res.json({ id: r.lastInsertRowid });
+      res.json({ id: r.id });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
@@ -260,11 +260,11 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
 
       const task_ids = [];
       for (const a of assignments) {
-        const r = await db.run(
-          'INSERT INTO project_tasks (project_id, student_id, title, description, deadline) VALUES (?,?,?,?,?)',
+        const r = await db.get(
+          'INSERT INTO project_tasks (project_id, student_id, title, description, deadline) VALUES (?,?,?,?,?) RETURNING id',
           parseInt(req.params.id), a.student_id, a.title, a.description || null, deadline || null
         );
-        task_ids.push(r.lastInsertRowid);
+        task_ids.push(r.id);
       }
       res.json({ success: true, assigned: assignments.length, task_ids });
     } catch (e) { res.status(500).json({ error: e.message }); }

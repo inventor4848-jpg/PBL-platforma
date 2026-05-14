@@ -603,19 +603,7 @@
       openModal('modal-task');
     }
 
-    async function saveTask() {
-      const projectId = document.getElementById('task-project-id').value;
-      const student_id = document.getElementById('task-student').value;
-      const title = document.getElementById('task-title').value.trim();
-      const description = document.getElementById('task-desc').value.trim();
-      if (!student_id || !title) return toast('Talaba va sarlavha kerak', 'error');
-      try {
-        await apiFetch(`/api/teacher/projects/${projectId}/tasks`, { method: 'POST', body: JSON.stringify({ student_id, title, description }) });
-        toast('Vazifa qo\'shildi!', 'success');
-        closeModal('modal-task');
-        loadProjectDetail(projectId);
-      } catch (e) { toast(e.message, 'error'); }
-    }
+    // First saveTask removed to prevent conflicts
 
     function openAssignAll(projectId) {
       document.getElementById('assign-project-id').value = projectId;

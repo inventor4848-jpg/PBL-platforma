@@ -46,7 +46,7 @@ module.exports = function (db) {
 
       await db.run(
         "UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, file_data=?, submitted_at=NOW() WHERE id=?",
-        newFilePath, newOriginalFilename, newFileData, req.params.taskId
+        newFilePath, newOriginalFilename, newFileData, parseInt(req.params.taskId)
       );
       res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
