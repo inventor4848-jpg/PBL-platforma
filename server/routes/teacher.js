@@ -108,12 +108,15 @@ module.exports = function (db) {
 
   router.post('/projects/:id/tasks', async (req, res) => {
     try {
-      const { student_id, title, description } = req.body;
+      const { student_id, title, description, deadline, file_data, original_filename } = req.body;
       const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
       if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!student_id || !title) return res.status(400).json({ error: 'Talaba va sarlavha kerak' });
-      const r = await db.get('INSERT INTO project_tasks (project_id, student_id, title, description) VALUES (?,?,?,?) RETURNING id',
-        parseInt(req.params.id), student_id, title, description || null);
+      
+      const r = await db.get(
+        'INSERT INTO project_tasks (project_id, student_id, title, description, deadline, teacher_file_data, teacher_filename) VALUES (?,?,?,?,?,?,?) RETURNING id',
+        parseInt(req.params.id), student_id, title, description || null, deadline || null, file_data || null, original_filename || null
+      );
       res.json({ id: r.id });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
@@ -253,7 +256,7 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
   // AI VAZIFA — TASDIQLASH (preview ni DB ga saqlash)
   router.post('/projects/:id/ai-assign-confirm', async (req, res) => {
     try {
-      const { assignments, deadline } = req.body;
+      const { assignments, deadline, file_data, original_filename } = req.body;
       const project = await db.get('SELECT id FROM projects WHERE id=? AND teacher_id=?', parseInt(req.params.id), parseInt(req.user.id));
       if (!project) return res.status(403).json({ error: "Ruxsat yo'q" });
       if (!assignments || !assignments.length) return res.status(400).json({ error: 'Vazifalar kerak' });
@@ -261,8 +264,8 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
       const task_ids = [];
       for (const a of assignments) {
         const r = await db.get(
-          'INSERT INTO project_tasks (project_id, student_id, title, description, deadline) VALUES (?,?,?,?,?) RETURNING id',
-          parseInt(req.params.id), a.student_id, a.title, a.description || null, deadline || null
+          'INSERT INTO project_tasks (project_id, student_id, title, description, deadline, teacher_file_data, teacher_filename) VALUES (?,?,?,?,?,?,?) RETURNING id',
+          parseInt(req.params.id), a.student_id, a.title, a.description || null, deadline || null, file_data || null, original_filename || null
         );
         task_ids.push(r.id);
       }

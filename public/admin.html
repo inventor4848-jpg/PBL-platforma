@@ -515,7 +515,7 @@
         <button class="btn btn-sm btn-info" onclick="editDept(${d.id},'${d.name.replace(/'/g, "\\'")}',${d.faculty_id})">Tahrirlash</button>
         <button class="btn btn-sm btn-danger" onclick="deleteDept(${d.id})">O'chirish</button>
       </td>
-    </tr>`).join('') : '<tr><td colspan="5"><div class="empty-state"><div class="icon">🏢</div><h3>Kafedra yo\'q</h3></div></td></tr>';
+    </tr>`).join('') : '<tr><td colspan="5"><div class="empty-state"><h3>Kafedra yo\'q</h3></div></td></tr>';
     }
 
     function renderGroups() {
@@ -662,7 +662,7 @@
           <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">O'chirish</button>
         </td>
       </tr>`).join('') :
-        '<tr><td colspan="6"><div class="empty-state"><div class="icon">👨‍🏫</div><h3>O\'qituvchi yo\'q</h3></div></td></tr>';
+        '<tr><td colspan="6"><div class="empty-state"><h3>O\'qituvchi yo\'q</h3></div></td></tr>';
 
       document.querySelector('#student-table tbody').innerHTML = tStudents.length ?
         tStudents.map((u, i) => `
@@ -677,7 +677,7 @@
           <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">O'chirish</button>
         </td>
       </tr>`).join('') :
-        '<tr><td colspan="6"><div class="empty-state"><div class="icon">🎓</div><h3>Talaba yo\'q</h3></div></td></tr>';
+        '<tr><td colspan="6"><div class="empty-state"><h3>Talaba yo\'q</h3></div></td></tr>';
     }
 
     function openAddUser(role) {
@@ -774,7 +774,7 @@
         <td>${formatDate(p.deadline)}</td>
         <td><button class="btn btn-sm btn-danger" onclick="deleteProject(${p.id})">O'chirish</button></td>
       </tr>`).join('') :
-        '<tr><td colspan="7"><div class="empty-state"><div class="icon">📋</div><h3>Loyiha yo\'q</h3></div></td></tr>';
+        '<tr><td colspan="7"><div class="empty-state"><h3>Loyiha yo\'q</h3></div></td></tr>';
     }
 
     async function saveProject() {

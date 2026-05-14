@@ -158,7 +158,7 @@
                 <div class="chat-messages" id="chat-messages"
                   style="flex:1;border:1px solid var(--border);border-radius:var(--radius);background:var(--light)">
                   <div class="empty-state">
-                    <div class="icon">💬</div>
+
                     <p>Loyiha tanlang</p>
                   </div>
                 </div>
@@ -259,7 +259,7 @@
         </div>
         <div class="grade-circle ${gradeClass(t.grade)}">${t.grade}</div>
       </div>`).join('') :
-        '<div class="empty-state" style="padding:1.5rem"><div class="icon">📊</div><p>Hali baholangan vazifa yo\'q</p></div>';
+        '<div class="empty-state" style="padding:1.5rem"><p>Hali baholangan vazifa yo\'q</p></div>';
 
       document.getElementById('recent-tasks').innerHTML = tasks.slice(0, 5).map(t => `
     <div style="display:flex;align-items:center;gap:0.8rem;padding:0.6rem 0;border-bottom:1px solid var(--border)">
@@ -283,7 +283,7 @@
     function renderTasksTo(containerId, tasks) {
       const el = document.getElementById(containerId);
       if (!tasks.length) {
-        el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><h3>Vazifa yo\'q</h3></div>';
+        el.innerHTML = '<div class="empty-state"><h3>Vazifa yo\'q</h3></div>';
         return;
       }
       el.innerHTML = tasks.map(t => `

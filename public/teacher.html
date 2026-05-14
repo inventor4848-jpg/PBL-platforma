@@ -208,7 +208,7 @@
               </div>
               <div id="dash-leaderboard">
                 <div class="empty-state">
-                  <div class="icon">🏆</div>
+
                   <p>Loyiha tanlang</p>
                 </div>
               </div>
@@ -261,7 +261,7 @@
                 <div class="chat-messages" id="chat-messages"
                   style="flex:1;border:1px solid var(--border);border-radius:var(--radius);background:var(--light)">
                   <div class="empty-state">
-                    <div class="icon">💬</div>
+
                     <p>Loyiha tanlang</p>
                   </div>
                 </div>
@@ -466,7 +466,7 @@
     }
 
     function renderLeaderboard(lb, container) {
-      if (!lb.length) { container.innerHTML = '<div class="empty-state"><div class="icon">🏆</div><p>Talabalar yo\'q</p></div>'; return; }
+      if (!lb.length) { container.innerHTML = '<div class="empty-state"><p>Talabalar yo\'q</p></div>'; return; }
       const medals = ['🥇', '🥈', '🥉'];
       container.innerHTML = '<ul class="leaderboard">' + lb.map((s, i) => `
     <li>
@@ -485,7 +485,7 @@
       myProjects = projs;
       const grid = document.getElementById('projects-grid');
       if (!projs.length) {
-        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">📋</div><h3>Hozircha loyiha yo\'q</h3><p>Admin tomonidan loyiha biriktirilishi kutilmoqda.</p></div>';
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>Hozircha loyiha yo\'q</h3><p>Admin tomonidan loyiha biriktirilishi kutilmoqda.</p></div>';
         return;
       }
       grid.innerHTML = projs.map(p => `
@@ -571,7 +571,7 @@
                 </tr>`).join('')}
             </tbody>
           </table>
-        </div>` : '<div class="empty-state"><div class="icon">📋</div><h3>Vazifa yo\'q</h3></div>'}
+        </div>` : '<div class="empty-state"><h3>Vazifa yo\'q</h3></div>'}
       </div>
 
       <div class="card">
@@ -715,10 +715,10 @@
       const student_id = document.getElementById('task-student').value;
       if (!student_id || !title) { btn.disabled = false; btn.textContent = 'Saqlash'; return toast('Talaba va sarlavha kerak', 'error'); }
       try {
-        const r = await apiFetch(`/api/teacher/projects/${projectId}/tasks`, { method: 'POST', body: JSON.stringify({ student_id, title, description }) });
-        if (file_data && r.id) {
-          await apiFetch(`/api/teacher/tasks/${r.id}/upload-file`, { method: 'PUT', body: JSON.stringify({ file_data, original_filename: teacher_filename }) });
-        }
+        await apiFetch(`/api/teacher/projects/${projectId}/tasks`, { 
+          method: 'POST', 
+          body: JSON.stringify({ student_id, title, description, deadline, file_data, original_filename: teacher_filename }) 
+        });
         toast('Vazifa qo\'shildi!', 'success');
         closeModal('modal-task');
         loadProjectDetail(projectId);
@@ -856,14 +856,8 @@
 
       try {
         const r = await apiFetch(`/api/teacher/projects/${aiCurrentProjectId}/ai-assign-confirm`, {
-          method: 'POST', body: JSON.stringify({ assignments: aiCurrentAssignments, deadline })
+          method: 'POST', body: JSON.stringify({ assignments: aiCurrentAssignments, deadline, file_data: ai_file_data, original_filename: ai_filename })
         });
-        // Upload file to each created task if file selected
-        if (ai_file_data && r.task_ids && r.task_ids.length) {
-          await Promise.all(r.task_ids.map(tid =>
-            apiFetch(`/api/teacher/tasks/${tid}/upload-file`, { method: 'PUT', body: JSON.stringify({ file_data: ai_file_data, original_filename: ai_filename }) })
-          ));
-        }
         toast(`✅ ${r.assigned} ta talabaga vazifa berildi!`, 'success');
         const prevId = aiCurrentProjectId;
         aiCurrentAssignments = null;
