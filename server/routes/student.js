@@ -60,7 +60,7 @@ module.exports = function (db) {
       const newOriginalFilename = original_filename || task.original_filename;
       const newFilePath = (file_data !== null && file_data !== undefined) ? ('db_' + Date.now() + '_' + (original_filename || 'vazifa')) : task.file_path;
 
-      if (file_data === undefined) return res.status(400).json({ error: "Fayl ma'lumotlari yuborilmadi" });
+      if (!file_data) return res.status(400).json({ error: "Fayl ma'lumotlari bo'sh yoki yuborilmadi" });
 
       await db.run(
         "UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, file_data=?, submitted_at=NOW() WHERE id=?",

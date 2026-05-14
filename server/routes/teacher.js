@@ -317,7 +317,7 @@ Faqat quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
       if (!task) return res.status(403).json({ error: "Ruxsat yo'q" });
 
       // DB based file transfer
-      if (task.file_data && task.file_data.length > 10) {
+      if (task.file_data) {
         const cleanBase64 = task.file_data.replace(/^data:.*?;base64,/, ''); // safety clear
         const buf = Buffer.from(cleanBase64, 'base64');
         const filename = task.original_filename || task.file_path || 'vazifa';
