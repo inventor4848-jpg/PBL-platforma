@@ -60,6 +60,8 @@ module.exports = function (db) {
       const newOriginalFilename = original_filename || task.original_filename;
       const newFilePath = file_data ? ('db_' + Date.now() + '_' + (original_filename || 'vazifa')) : task.file_path;
 
+      if (file_data && file_data.length < 10) return res.status(400).json({ error: "Fayl ma'lumotlari yaroqsiz" });
+
       await db.run(
         "UPDATE project_tasks SET status='submitted', file_path=?, original_filename=?, file_data=?, submitted_at=NOW() WHERE id=?",
         newFilePath, newOriginalFilename, newFileData, parseInt(req.params.taskId)

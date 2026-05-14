@@ -366,6 +366,14 @@
           });
         }
 
+        if (file && !file_data) {
+          throw new Error('Faylni o\'qishda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
+        }
+
+        if (file && file.size > 4 * 1024 * 1024) {
+          throw new Error('Fayl hajmi juda katta (maksimal 4MB). Iltimos, kichikroq fayl yuklang.');
+        }
+
         const res = await fetch(`/api/student/tasks/${taskId}/submit`, {
           method: 'POST',
           headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
