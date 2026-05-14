@@ -304,7 +304,10 @@
           📎 <span>${t.teacher_filename}</span>
         </div>
         <button class="btn btn-info btn-sm" onclick="downloadTeacherFile(${t.id},'${t.teacher_filename.replace(/'/g,"\\'")}')">Yuklab olish</button>
-      </div>` : ''}
+      </div>` : `
+      <div style="background:var(--light);border:1px dashed var(--border);border-radius:8px;padding:0.6rem 1rem;margin-bottom:0.8rem;font-size:0.85rem;color:var(--gray)">
+        ℹ️ O'qituvchi bu vazifaga fayl biriktirmagan
+      </div>`}
       <div class="task-footer">
         <div style="display:flex;align-items:center;gap:1rem">
           ${t.grade ? `

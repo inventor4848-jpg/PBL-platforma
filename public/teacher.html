@@ -558,8 +558,8 @@
                       ${t.has_file ? 'Yuklab olish' : 'Fayl yo\'q'}
                     </button>` : ''}
                     ${t.status === 'submitted' ? `<button class="btn btn-sm btn-success" onclick="openGrade(${t.id})">Baholash</button>` : ''}
-                    <button class="btn btn-sm btn-gray" onclick="editTask(${t.id}, '${t.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${(t.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${t.deadline ? t.deadline.slice(0, 10) : ''}')">✏️</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})">🗑️</button>
+                    <button class="btn btn-sm btn-gray" onclick="editTask(${t.id}, '${t.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${(t.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${t.deadline ? t.deadline.slice(0, 10) : ''}')">Tahrirlash</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})">O'chirish</button>
                   </td>
                 </tr>`).join('')}
             </tbody>

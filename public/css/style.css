@@ -292,12 +292,7 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  border-left: 4px solid var(--primary);
 }
-.stat-card.accent { border-left-color: var(--accent); }
-.stat-card.success { border-left-color: var(--success); }
-.stat-card.danger { border-left-color: var(--danger); }
-.stat-card.info { border-left-color: var(--info); }
 .stat-icon { font-size: 2rem; }
 .stat-info h3 { font-size: 2rem; font-weight: 800; line-height: 1; }
 .stat-info p { font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
