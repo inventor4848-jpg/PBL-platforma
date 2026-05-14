@@ -366,8 +366,8 @@
           });
         }
 
-        if (file && !file_data) {
-          throw new Error('Faylni o\'qishda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
+        if (file && (file_data === null || file_data === undefined)) {
+          throw new Error('Faylni o\'qish muvaffaqiyatsiz tugadi. Iltimos, faylni qayta tanlang.');
         }
 
         if (file && file.size > 4 * 1024 * 1024) {
